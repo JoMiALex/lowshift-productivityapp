@@ -8,53 +8,44 @@ export const FormLogIn = () => {
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen">
-            <div className="mb-8" style={{
-                width: '497px',
-                textAlign: 'center',
-                color: 'white',
-                fontSize: '36px',
-                fontFamily: 'Inter',
-                fontWeight: '400',
-                lineHeight: '44px',
-                wordWrap: 'break-word'
-            }}>
+            <div className="absolute top-20 text-center text-white text-4xl font-normal leading-tight" style={{ width: '497px', fontFamily: 'Inter' }}>
                 LowShift
             </div>
 
-            <div className="flex flex-col w-600 h-700 items-center gap-33 px-5 py-22 relative bg-white rounded-lg border border-solid border-[#d9d9d9]">
-                <div className="flex flex-col items-start gap-2 relative self-stretch w-full flex-[0_0_auto]">
-                    <div className="self-stretch mt-[-1px] relative font-body-base font-[number:var(--body-base-font-weight)] text-[#1e1e1e] text-[length:var(--body-base-font-size)] tracking-[var(--body-base-letter-spacing)] leading-[var(--body-base-line-height)] [font-style:var(--body-base-font-style)]">
+            <div className="flex flex-col items-center space-y-4 w-[600px] p-8 bg-white rounded-lg border border-solid border-[#d9d9d9] shadow-lg">
+                <div className="flex flex-col items-start gap-2 w-full">
+                    <div className="self-stretch relative font-body-base font-medium text-[#1e1e1e] text-base tracking-normal leading-normal">
                         Username:
                     </div>
 
-                    <div className="flex min-w-60 items-center px-4 py-3 relative self-stretch w-full flex-[0_0_auto] mb-[-1px] ml-[-1px] mr-[-1px] bg-white rounded-lg overflow-hidden border border-solid border-[#d9d9d9]">
-                        <div className="relative flex-1 mt-[-0.5px] font-single-line-body-base font-[number:var(--single-line-body-base-font-weight)] text-[#b3b3b3] text-[length:var(--single-line-body-base-font-size)] tracking-[var(--single-line-body-base-letter-spacing)] leading-[var(--single-line-body-base-line-height)] [font-style:var(--single-line-body-base-font-style)]">
+                    <div className="flex items-center px-5 py-4 w-full bg-white rounded-lg border border-solid border-[#d9d9d9]">
+                        <div className="relative flex-1 font-single-line-body-base font-medium text-[#b3b3b3] text-base tracking-normal leading-normal">
                             Value
                         </div>
                     </div>
                 </div>
 
-                <div className="flex flex-col items-start gap-2 relative self-stretch w-full flex-[0_0_auto]">
-                    <div className="self-stretch mt-[-1px] relative font-body-base font-[number:var(--body-base-font-weight)] text-[#1e1e1e] text-[length:var(--body-base-font-size)] tracking-[var(--body-base-letter-spacing)] leading-[var(--body-base-line-height)] [font-style:var(--body-base-font-style)]">
+                <div className="flex flex-col items-start gap-2 w-full">
+                    <div className="self-stretch relative font-body-base font-medium text-[#1e1e1e] text-base tracking-normal leading-normal">
                         Password:
                     </div>
 
-                    <div className="flex min-w-60 items-center px-4 py-3 relative self-stretch w-full flex-[0_0_auto] mb-[-1px] ml-[-1px] mr-[-1px] bg-white rounded-lg overflow-hidden border border-solid border-[#d9d9d9]">
-                        <div className="relative flex-1 mt-[-0.5px] font-single-line-body-base font-[number:var(--single-line-body-base-font-weight)] text-[#b3b3b3] text-[length:var(--single-line-body-base-font-size)] tracking-[var(--single-line-body-base-letter-spacing)] leading-[var(--single-line-body-base-line-height)] [font-style:var(--single-line-body-base-font-style)]">
+                    <div className="flex items-center px-5 py-4 w-full bg-white rounded-lg border border-solid border-[#d9d9d9]">
+                        <div className="relative flex-1 font-single-line-body-base font-medium text-[#b3b3b3] text-base tracking-normal leading-normal">
                             Value
                         </div>
                     </div>
                 </div>
 
-                <div className="flex flex-col items-start gap-2.5 relative self-stretch w-full flex-[0_0_auto]">
-                    <button className="all-[unset] box-border flex items-center justify-center gap-2 p-3 relative self-stretch w-full flex-[0_0_auto] bg-[#2c2c2c] rounded-lg overflow-hidden border border-solid border-[#2c2c2c] font-single-line-body-base font-[number:var(--single-line-body-base-font-weight)] text-neutral-100 text-[length:var(--single-line-body-base-font-size)] tracking-[var(--single-line-body-base-letter-spacing)] leading-[var(--single-line-body-base-line-height)] whitespace-nowrap [font-style:var(--single-line-body-base-font-style)]">
+                <div className="flex flex-col items-start gap-2.5 w-full">
+                <button className="w-full py-3 text-lg bg-[#2c2c2c] text-white rounded-md hover:bg-black transition duration-300">
                         Sign In
                     </button>
                 </div>
 
-                <div className="flex flex-col w-236 items-start relative flex-[0_0_auto]">
-                    <div className="flex items-center gap-3 relative self-stretch w-full flex-[0_0_auto]">
-                        <div className="flex-1 relative font-body-base font-[number:var(--body-base-font-weight)] text-[#1e1e1e] text-[length:var(--body-base-font-size)] tracking-[var(--body-base-letter-spacing)] leading-[var(--body-base-line-height)] [font-style:var(--body-base-font-style)]">
+                <div className="flex flex-col w-full space-y-2">
+                    <div className="flex justify-between items-center">
+                        <div className="flex-1 font-body-base font-medium text-[#1e1e1e] text-base tracking-normal leading-normal">
                             Supervisor/Admin
                         </div>
                         <button 
@@ -70,11 +61,8 @@ export const FormLogIn = () => {
                             />
                         </button>
                     </div>
-                </div>
-
-                <div className="flex flex-col w-236 items-start relative flex-[0_0_auto]">
-                    <div className="flex items-center gap-3 relative self-stretch w-full flex-[0_0_auto]">
-                        <div className="flex-1 relative font-body-base font-[number:var(--body-base-font-weight)] text-[#1e1e1e] text-[length:var(--body-base-font-size)] tracking-[var(--body-base-letter-spacing)] leading-[var(--body-base-line-height)] [font-style:var(--body-base-font-style)]">
+                    <div className="flex justify-between items-center">
+                    <div className="flex-1 font-body-base font-medium text-[#1e1e1e] text-base tracking-normal leading-normal">
                             Shift View
                         </div>
                         <button 
