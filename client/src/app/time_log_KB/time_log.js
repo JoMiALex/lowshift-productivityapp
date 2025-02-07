@@ -17,9 +17,9 @@ function createTable() {
     const thead = document.createElement('thead');
     const tbody = document.createElement('tbody');
 
-    //header row
+    // Header row
     const headerRow = document.createElement('tr');
-    const headers = ['Days', 'Daily Total', 'Pay Code', 'Hours', 'Comments']
+    const headers = ['Days', 'Daily Total', 'Pay Code', 'Hours', 'Comments'];
 
     headers.forEach(headerText => {
         const th = document.createElement('th');
@@ -30,16 +30,55 @@ function createTable() {
     thead.appendChild(headerRow);
     table.appendChild(thead);
 
-    // Add rows
-    for(let i = 0; i < 12; i++) {
+    // Define days of the week
+    const days = [
+        'Sunday',
+        'Monday',
+        'Tuesday',
+        'Wednesday',
+        'Thursday',
+        'Friday',
+        'Saturday'
+    ];
+
+    // Create initial data structure
+    const rowData = days.map(day => ({
+        day: day,
+        dailyTotal: '0.00',
+        payCode: 'Regular',
+        hours: '0.00',
+        comments: ''
+    }));
+
+    // Add rows with specific days
+    rowData.forEach(data => {
         const row = document.createElement('tr');
-        for(let j = 0; j < 5; j++) {
-            const cell = document.createElement('td');
-            cell.textContent = `Row ${i+1}, Cell ${j+1}`;
-            row.appendChild(cell);
-        }
+        
+        // Create cells with specific data
+        const dayCell = document.createElement('td');
+        dayCell.textContent = data.day;
+        
+        const totalCell = document.createElement('td');
+        totalCell.textContent = data.dailyTotal;
+        
+        const payCodeCell = document.createElement('td');
+        payCodeCell.textContent = data.payCode;
+        
+        const hoursCell = document.createElement('td');
+        hoursCell.textContent = data.hours;
+        
+        const commentsCell = document.createElement('td');
+        commentsCell.textContent = data.comments;
+        
+        // Append all cells to the row
+        row.appendChild(dayCell);
+        row.appendChild(totalCell);
+        row.appendChild(payCodeCell);
+        row.appendChild(hoursCell);
+        row.appendChild(commentsCell);
+        
         tbody.appendChild(row);
-    }
+    });
 
     table.appendChild(tbody);
 
@@ -47,6 +86,9 @@ function createTable() {
     const interBox = document.getElementById('inter_box');
     interBox.appendChild(table);
 }
+
+// Call the function after the DOM is loaded
+document.addEventListener('DOMContentLoaded', createTable);
 
 
 // Call the function after the DOM is loaded
