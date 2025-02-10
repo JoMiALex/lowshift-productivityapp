@@ -160,7 +160,8 @@ function updateTableDates(startDate) {
         const dayCell = rows[i].cells[0];
         const date = dates[i-1];
         const dayName = date.toLocaleDateString('en-US', { weekday: 'long' });
-        dayCell.textContent = dayName;
+        const dayNumber = date.getDate();
+        dayCell.textContent = `${dayNumber} ${dayName}`;
     }
 }
 
