@@ -36,40 +36,61 @@ function formatDate(date) {
     });
 }
 
+// Modify weekEdit to use the new initialization
 function weekEdit() {
-    const weekDisplay = document.getElementById('weekDisplay');
     const lButton = document.getElementById('leftButton');
     const rButton = document.getElementById('rightButton');
     const dButton = document.getElementById('downButton');
     const calendarDropdown = document.getElementById('calendarDropdown');
-
-    // Get current week dates
-    const weekDates = getWeekDates();
 
     // Set up button click handlers
     lButton.onclick = () => navigateWeek(-1);
     rButton.onclick = () => navigateWeek(1);
     dButton.onclick = toggleCalendar;
 
-    // Set initial week display
-    weekDisplay.textContent = `Week of ${formatDate(weekDates.start)} - ${formatDate(weekDates.end)}`;
-
-    // Initial Calendar render
+    // Initialize calendar
     renderCalendar(calendarDropdown);
+    
+    // Initialize week display and table
+    initializeWeek();
 }
 
+let currentStartDate = new Date(); // Global variable to track current week
 
+function initializeWeek() {
+    // Get the start of the current week
+    const weekDates = getWeekDates(currentStartDate);
+    currentStartDate = weekDates.start;
+    
+    // Update initial display
+    updateWeekDisplay(currentStartDate);
+    updateTableDates(currentStartDate);
+}
 
 function navigateWeek(direction) {
+    // Update the current start date by adding/subtracting 7 days
+    currentStartDate.setDate(currentStartDate.getDate() + (direction * 7));
+    
+    // Update both the week display and table
+    updateWeekDisplay(currentStartDate);
+    updateTableDates(currentStartDate);
+}
+
+function updateWeekDisplay(startDate) {
     const weekDisplay = document.getElementById('weekDisplay');
-    const currentStart = getWeekDates().start;
-    currentStart.setDate(currentStart.getDate() + (direction * 7));
+    const endDate = new Date(startDate);
+    endDate.setDate(startDate.getDate() + 6);
     
-    const newEnd = new Date(currentStart);
-    newEnd.setDate(currentStart.getDate() + 6);
-    
-    weekDisplay.textContent = `Week of ${formatDate(currentStart)} - ${formatDate(newEnd)}`;
-    updateTableDates(currentStart);
+    weekDisplay.textContent = `Week of ${formatDate(startDate)} - ${formatDate(endDate)}`;
+}
+
+// Update the selectDate function to work with the new navigation
+function selectDate(date) {
+    const weekDates = getWeekDates(date);
+    currentStartDate = weekDates.start;
+    updateWeekDisplay(currentStartDate);
+    updateTableDates(currentStartDate);
+    toggleCalendar();
 }
 
 function toggleCalendar() {
@@ -183,45 +204,36 @@ function createTable() {
     thead.appendChild(headerRow);
     table.appendChild(thead);
 
-    // Define days of the week
-    const days = [
-        'Sunday',
-        'Monday',
-        'Tuesday',
-        'Wednesday',
-        'Thursday',
-        'Friday',
-        'Saturday'
-    ];
 
-    // Create initial data structure
-    const rowData = days.map(day => ({
-        day: day,
-        dailyTotal: '0.00',
-        payCode: 'Regular',
-        hours: '0.00',
-        comments: ''
-    }));
 
-    // Add rows with specific days
-    rowData.forEach(data => {
+    // Get current week's start date
+    const currentWeekStart = getWeekDates().start;
+
+    // Create rows for each day of the week
+    for(let i = 0; i < 7; i++) {
         const row = document.createElement('tr');
+        
+        // Calculate the date for this day
+        const currentDate = new Date(currentWeekStart);
+        currentDate.setDate(currentWeekStart.getDate() + i);
         
         // Create cells with specific data
         const dayCell = document.createElement('td');
-        dayCell.textContent = data.day;
+        const dayName = currentDate.toLocaleDateString('en-US', { weekday: 'long' });
+        const dayNumber = currentDate.getDate();
+        dayCell.textContent = `${dayNumber} ${dayName}`;
         
         const totalCell = document.createElement('td');
-        totalCell.textContent = data.dailyTotal;
+        totalCell.textContent = '0.00';
         
         const payCodeCell = document.createElement('td');
-        payCodeCell.textContent = data.payCode;
+        payCodeCell.textContent = 'Regular';
         
         const hoursCell = document.createElement('td');
-        hoursCell.textContent = data.hours;
+        hoursCell.textContent = '0.00';
         
         const commentsCell = document.createElement('td');
-        commentsCell.textContent = data.comments;
+        commentsCell.textContent = '';
         
         // Append all cells to the row
         row.appendChild(dayCell);
@@ -231,7 +243,7 @@ function createTable() {
         row.appendChild(commentsCell);
         
         tbody.appendChild(row);
-    });
+    }
 
     table.appendChild(tbody);
 
