@@ -103,22 +103,57 @@ function toggleCalendar() {
         dropdown.style.display = 'none';
     }
 }
+// Add this as a global variable at the top of your file
+let currentCalendarDate = new Date();
 
 function renderCalendar(container) {
     const today = new Date();
-    // Use the currentStartDate for the calendar's current month/year
-    const currentMonth = currentStartDate.getMonth();
-    const currentYear = currentStartDate.getFullYear();
+    // Use currentCalendarDate instead of currentStartDate for the calendar's month/year
+    const currentMonth = currentCalendarDate.getMonth();
+    const currentYear = currentCalendarDate.getFullYear();
     
     const calendar = document.createElement('div');
     calendar.className = 'calendar';
     
+    // Create month navigation container
+    const monthNav = document.createElement('div');
+    monthNav.className = 'month-navigation';
+    monthNav.style.display = 'flex';
+    monthNav.style.justifyContent = 'space-between';
+    monthNav.style.alignItems = 'center';
+    monthNav.style.padding = '5px';
+    
+    // Left arrow
+    const leftArrow = document.createElement('button');
+    leftArrow.innerHTML = '←';
+    leftArrow.onclick = () => {
+        currentCalendarDate.setMonth(currentCalendarDate.getMonth() - 1);
+        renderCalendar(container);
+    };
+    
     // Month header
     const monthHeader = document.createElement('h3');
-    monthHeader.textContent = new Date(currentYear, currentMonth).toLocaleString('default', { month: 'long', year: 'numeric' });
-    calendar.appendChild(monthHeader);
+    monthHeader.style.margin = '0';
+    monthHeader.textContent = new Date(currentYear, currentMonth).toLocaleString('default', { 
+        month: 'long', 
+        year: 'numeric' 
+    });
+    
+    // Right arrow
+    const rightArrow = document.createElement('button');
+    rightArrow.innerHTML = '→';
+    rightArrow.onclick = () => {
+        currentCalendarDate.setMonth(currentCalendarDate.getMonth() + 1);
+        renderCalendar(container);
+    };
+    
+    // Add all elements to the month navigation
+    monthNav.appendChild(leftArrow);
+    monthNav.appendChild(monthHeader);
+    monthNav.appendChild(rightArrow);
+    calendar.appendChild(monthNav);
 
-    // Rest of your calendar rendering code...
+    // Rest of your existing calendar rendering code...
     const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     const weekdayHeader = document.createElement('div');
     weekdayHeader.className = 'weekday-header';
