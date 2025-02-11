@@ -94,14 +94,21 @@ function selectDate(date) {
 }
 
 function toggleCalendar() {
-    const dropdown = document.getElementById('calendar-dropdown');
-    dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+    const dropdown = document.getElementById('calendarDropdown');
+    if (dropdown.style.display === 'none' || dropdown.style.display === '') {
+        dropdown.style.display = 'block';
+        // Re-render calendar when showing
+        renderCalendar(dropdown);
+    } else {
+        dropdown.style.display = 'none';
+    }
 }
 
 function renderCalendar(container) {
     const today = new Date();
-    const currentMonth = today.getMonth();
-    const currentYear = today.getFullYear();
+    // Use the currentStartDate for the calendar's current month/year
+    const currentMonth = currentStartDate.getMonth();
+    const currentYear = currentStartDate.getFullYear();
     
     const calendar = document.createElement('div');
     calendar.className = 'calendar';
@@ -111,7 +118,7 @@ function renderCalendar(container) {
     monthHeader.textContent = new Date(currentYear, currentMonth).toLocaleString('default', { month: 'long', year: 'numeric' });
     calendar.appendChild(monthHeader);
 
-    // Weekday headers
+    // Rest of your calendar rendering code...
     const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     const weekdayHeader = document.createElement('div');
     weekdayHeader.className = 'weekday-header';
@@ -122,22 +129,17 @@ function renderCalendar(container) {
     });
     calendar.appendChild(weekdayHeader);
 
-    // Date grid
     const dateGrid = document.createElement('div');
     dateGrid.className = 'date-grid';
 
-    // Get the first day of the month
     const firstDay = new Date(currentYear, currentMonth, 1).getDay();
-    // Get the number of days in the month
     const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
 
-    // Add empty cells for days before the first of the month
     for (let i = 0; i < firstDay; i++) {
         const emptyDay = document.createElement('div');
         dateGrid.appendChild(emptyDay);
     }
 
-    // Add cells for each day of the month
     for (let day = 1; day <= daysInMonth; day++) {
         const dateElement = document.createElement('div');
         dateElement.textContent = day;
@@ -145,12 +147,13 @@ function renderCalendar(container) {
         if (day === today.getDate() && currentMonth === today.getMonth() && currentYear === today.getFullYear()) {
             dateElement.classList.add('today');
         }
-        dateElement.addEventListener('click', () => selectDate(new Date(currentYear, currentMonth, day)));
+        dateElement.addEventListener('click', () => {
+            selectDate(new Date(currentYear, currentMonth, day));
+        });
         dateGrid.appendChild(dateElement);
     }
 
     calendar.appendChild(dateGrid);
-    
     container.innerHTML = '';
     container.appendChild(calendar);
 }
