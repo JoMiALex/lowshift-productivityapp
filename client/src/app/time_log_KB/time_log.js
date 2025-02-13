@@ -22,7 +22,7 @@ function getWeekDates(date = new Date()) {
     // Find Saturday (end of week)
     const saturday = new Date(sunday);
     saturday.setDate(sunday.getDate() + 6);
-    
+
     return {
         start: sunday,
         end: saturday
@@ -32,7 +32,8 @@ function getWeekDates(date = new Date()) {
 function formatDate(date) {
     return date.toLocaleDateString('en-US', { 
         month: 'short', 
-        day: 'numeric'
+        day: 'numeric',
+        year: 'numeric'
     });
 }
 
