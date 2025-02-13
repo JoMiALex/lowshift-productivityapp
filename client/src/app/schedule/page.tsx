@@ -1,5 +1,5 @@
 import type { WeekSchedule } from "@/app/schedule/schedule"
-import { ScheduleView } from "@/app/schedule/ScheduleView"
+import ScheduleView from "@/app/schedule/ScheduleView"
 
 export default function SchedulePage() {
     // Placeholder shifts...
