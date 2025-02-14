@@ -12,7 +12,7 @@ export default function ScheduleView({ schedule }: ScheduleViewProps) {
       {daysOfWeek.map((day, index) => (
         <div key={day} className="bg-white rounded-lg shadow-md overflow-hidden">
           <div className="bg-gray-100 px-4 py-2 border-b">
-            <h3 className="font-semibold text-lg">{day}</h3>
+            <h3 className="font-semibold text-lg text-black">{day}</h3>
           </div>
           <div className="p-4">
             {schedule.days[index]?.shifts.map((shift) => (
