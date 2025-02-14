@@ -115,21 +115,23 @@ const TimeLog = () => {
                 >
                     ←
                 </button>
-                <div className="relative">
+                <div className="relative flex items-center">
                     <span className="font-bold text-lg">
                         Week of {formatDate(weekDates.start)} - {formatDate(weekDates.end)}
                     </span>
-                    <button 
-                        onClick={() => setShowCalendar(!showCalendar)}
-                        className="ml-2 w-10 h-10 rounded-full border-2 border-gray-300 flex items-center justify-center hover:bg-gray-100"
-                    >
-                        ▼
-                    </button>
-                    {showCalendar && (
-                        <div className="absolute top-12 right-0 z-10">
-                            {renderCalendar()}
-                        </div>
-                    )}
+                    <div className="relative inline-flex items-center">
+                        <button 
+                            onClick={() => setShowCalendar(!showCalendar)}
+                            className="ml-2 w-10 h-10 rounded-full border-2 border-gray-300 flex items-center justify-center hover:bg-gray-100"
+                        >
+                            ▼
+                        </button>
+                        {showCalendar && (
+                            <div className="absolute top-12 right-0 z-10">
+                                {renderCalendar()}
+                            </div>
+                        )}
+                    </div>
                 </div>
                 <button 
                     onClick={() => navigateWeek(1)}
