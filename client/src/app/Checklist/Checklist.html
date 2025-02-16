@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Checklist</title>
+
+    <!-- FONT AWESOME -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css" integrity="sha512-5Hs3dF2AEPkpNAR7UiOHba+lRSJNeM2ECkwxUIxC1Q/FLycGTbNapWXB4tP889k5T5Ju8fs4b1P5z/iB4nMfSQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <!-- CSS FILE -->
+    <link rel="stylesheet" href="checklistStyle.css">
+</head>
+<body>
+    <!-- NAVIGATION BARS -->
+    <div class="container">
+        <div class="navBar">
+            <div class="menuIcon" onclick="toggleSidebar()">
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
+            <div class="menuBar">
+                <div class="logo">Low Shift</div>
+                <ul>
+                    <li>
+                        <a href="#profile">
+                            <span>Profile</span>
+                            <img src="photo.jpg" class="profile-photo" onerror="this.onerror=null; this.src='default-icon.png';">
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#logOut">
+                            <span>Logout <i class="fa-solid fa-right-from-bracket"></i></span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div id="sideBar" class="sideBar">
+            <ul>
+                <li><a href="home.html"><i class="fa-solid fa-house"></i><span>Home</span></a></li>
+                <li><a href="timeclock.html"><i class="fa-solid fa-clock"></i><span>Time Clock</span></a></li>
+                <li><a href="schedule.html"><i class="fa-solid fa-calendar"></i><span>Schedule</span></a></li>
+                <li><a href="shift.html"><i class="fa-solid fa-list"></i><span>Shift</span></a></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Checklist Section -->
+    <div class="checklist-container">
+        <h2>Daily Checklist</h2>
+        <div class="task-input">
+            <input type="text" id="taskInput" placeholder="Enter a task...">
+            <button onclick="addTask()">Add Task</button>
+        </div>
+        <ul id="taskList"></ul>
+    </div>
+
+    <!-- JS FILE -->
+    <script src="checklistScript.js"></script>
+</body>
+</html>
