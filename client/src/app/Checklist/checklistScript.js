@@ -1,61 +1,65 @@
-document.addEventListener("DOMContentLoaded", function () {
-    loadTasks();
-});
+'use client'
+import React, { useState, useEffect } from 'react';
 
-//add task Function
-function addTask() {
-    let taskInput = document.getElementById("taskInput");
-    let taskText = taskInput.value.trim();
-    if (taskText === "") return;
+const Checklist = () => {
+    const [tasks, setTasks] = useState([]);
+    const [taskInput, setTaskInput] = useState('');
 
-    let taskList = document.getElementById("taskList");
-    let li = document.createElement("li");
-    li.innerHTML = `
-        <input type="checkbox" onclick="toggleTask(this)">
-        <span>${taskText}</span>
-        <button onclick="removeTask(this)">X</button>
-    `;
-    taskList.appendChild(li);
+    useEffect(() => {
+        const savedTasks = JSON.parse(localStorage.getItem('tasks')) || [];
+        setTasks(savedTasks);
+    }, []);
 
-    saveTasks();
-    taskInput.value = "";
-}
-//toggle task Function Incomplete/Complete
+    useEffect(() => {
+        localStorage.setItem('tasks', JSON.stringify(tasks));
+    }, [tasks]);
 
-function toggleTask(checkbox) {
-    let taskText = checkbox.nextElementSibling;
-    taskText.classList.toggle("completed");
-    saveTasks();
-}
-//Remove task Function
-function removeTask(button) {
-    let li = button.parentElement;
-    li.remove();
-    saveTasks();
-}
-//Save task Function
-function saveTasks() {
-    let tasks = [];
-    document.querySelectorAll("#taskList li").forEach(li => {
-        tasks.push({
-            text: li.querySelector("span").innerText,
-            completed: li.querySelector("input").checked
-        });
-    });
-    localStorage.setItem("tasks", JSON.stringify(tasks));
-}
-//Load task Function
-function loadTasks() {
-    let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
-    let taskList = document.getElementById("taskList");
-    taskList.innerHTML = "";
-    tasks.forEach(task => {
-        let li = document.createElement("li");
-        li.innerHTML = `
-            <input type="checkbox" ${task.completed ? "checked" : ""} onclick="toggleTask(this)">
-            <span class="${task.completed ? "completed" : ""}">${task.text}</span>
-            <button onclick="removeTask(this)">X</button>
-        `;
-        taskList.appendChild(li);
-    });
-}
+    const addTask = () => {
+        if (taskInput.trim() === '') return;
+        setTasks([...tasks, { text: taskInput, completed: false }]);
+        setTaskInput('');
+    };
+
+    const toggleTask = (index) => {
+        const updatedTasks = [...tasks];
+        updatedTasks[index].completed = !updatedTasks[index].completed;
+        setTasks(updatedTasks);
+    };
+
+    const removeTask = (index) => {
+        setTasks(tasks.filter((_, i) => i !== index));
+    };
+
+    return (
+        <div className="p-8 max-w-lg mx-auto bg-white shadow-lg rounded-lg">
+            <h2 className="text-xl font-bold mb-4">Daily Checklist</h2>
+            <div className="flex gap-2 mb-4">
+                <input
+                    type="text"
+                    value={taskInput}
+                    onChange={(e) => setTaskInput(e.target.value)}
+                    placeholder="Enter a task..."
+                    className="flex-1 p-2 border rounded"
+                />
+                <button onClick={addTask} className="p-2 bg-blue-500 text-white rounded">Add</button>
+            </div>
+            <ul>
+                {tasks.map((task, index) => (
+                    <li key={index} className="flex justify-between items-center p-2 border-b">
+                        <div className="flex items-center gap-2">
+                            <input
+                                type="checkbox"
+                                checked={task.completed}
+                                onChange={() => toggleTask(index)}
+                            />
+                            <span className={task.completed ? "line-through text-gray-500" : ""}>{task.text}</span>
+                        </div>
+                        <button onClick={() => removeTask(index)} className="text-red-500">X</button>
+                    </li>
+                ))}
+            </ul>
+        </div>
+    );
+};
+
+export default Checklist;
