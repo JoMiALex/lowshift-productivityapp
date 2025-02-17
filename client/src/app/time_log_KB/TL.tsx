@@ -50,13 +50,13 @@ const TimeLog = () => {
         };
 
         return (
-            <div className="bg-white border border-gray-200 rounded-lg shadow-lg p-4 w-[280px]">
+            <div className="bg-white border border-gray-200 text-black rounded-lg shadow-lg p-4 w-[280px]">
                 <div className="flex justify-between items-center mb-4">
                     <button 
                         onClick={() => navigateMonth(-1)}
-                        className="p-2 rounded-full hover:bg-gray-100"
+                        className="p-2 rounded-full hover:bg-gray-100 text-black"
                     >←</button>
-                    <h3 className="text-lg font-semibold">
+                    <h3 className="text-lg font-semibold text-black">
                         {currentCalendarDate.toLocaleString('default', { 
                             month: 'long', 
                             year: 'numeric' 
@@ -64,7 +64,7 @@ const TimeLog = () => {
                     </h3>
                     <button 
                         onClick={() => navigateMonth(1)}
-                        className="p-2 rounded-full hover:bg-gray-100"
+                        className="p-2 rounded-full hover:bg-gray-100 text-black"
                     >→</button>
                 </div>
                 <div className="grid grid-cols-7 gap-1 text-center mb-2">
