@@ -144,11 +144,11 @@ const TimeLog = () => {
             <table className="w-full border-collapse border border-gray-300">
                 <thead>
                     <tr>
-                        <th className="border border-gray-300 p-3 bg-gray-50">Days</th>
-                        <th className="border border-gray-300 p-3 bg-gray-50">Daily Total</th>
-                        <th className="border border-gray-300 p-3 bg-gray-50">Pay Code</th>
-                        <th className="border border-gray-300 p-3 bg-gray-50">Hours</th>
-                        <th className="border border-gray-300 p-3 bg-gray-50">Comments</th>
+                        <th className="border border-gray-300 p-3 bg-gray-50 text-black">Days</th>
+                        <th className="border border-gray-300 p-3 bg-gray-50 text-black">Daily Total</th>
+                        <th className="border border-gray-300 p-3 bg-gray-50 text-black">Pay Code</th>
+                        <th className="border border-gray-300 p-3 bg-gray-50 text-black">Hours</th>
+                        <th className="border border-gray-300 p-3 bg-gray-50 text-black">Comments</th>
                     </tr>
                 </thead>
                 <tbody>
