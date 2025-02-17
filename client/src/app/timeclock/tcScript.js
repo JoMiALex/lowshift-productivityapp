@@ -24,3 +24,7 @@ function clock(){
     document.getElementById('sec').innerHTML = s;
 
 }var inter = setInterval(clock, 400);
+
+function toggleSidebar() {
+    document.getElementById("sideBar").classList.toggle("active");
+}
