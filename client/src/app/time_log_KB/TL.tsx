@@ -107,66 +107,64 @@ const TimeLog = () => {
     });
 
     return (
-        <div className="mt-20 mx-auto max-w-6xl">
-            <div className="bg-white p-8 rounded-lg shadow-lg">
-                <div className="flex items-center justify-center gap-4 mb-8">
-                    <button 
-                        onClick={() => navigateWeek(-1)}
-                        className="w-10 h-10 rounded-full border-2 border-black flex items-center justify-center hover:bg-gray-100 text-black"
-                    >
-                        ←
-                    </button>
-                    <div className="relative flex items-center">
-                        <span className="font-bold text-lg text-black">
-                            Week of {formatDate(weekDates.start)} - {formatDate(weekDates.end)}
-                        </span>
-                        <div className="relative inline-flex items-center">
-                            <button 
-                                onClick={() => setShowCalendar(!showCalendar)}
-                                className="ml-2 w-10 h-10 rounded-full border-2 border-black flex items-center justify-center hover:bg-gray-100 text-black"
-                            >
-                                ▼
-                            </button>
-                            {showCalendar && (
-                                <div className="absolute top-12 right-0 z-10">
-                                    {renderCalendar()}
-                                </div>
-                            )}
-                        </div>
+        <div className="p-8 max-w-6xl mx-auto">
+            <div className="flex items-center justify-center gap-4 mb-8">
+                <button 
+                    onClick={() => navigateWeek(-1)}
+                    className="w-10 h-10 rounded-full border-2 border-gray-300 flex items-center justify-center hover:bg-gray-100"
+                >
+                    ←
+                </button>
+                <div className="relative flex items-center">
+                    <span className="font-bold text-lg">
+                        Week of {formatDate(weekDates.start)} - {formatDate(weekDates.end)}
+                    </span>
+                    <div className="relative inline-flex items-center">
+                        <button 
+                            onClick={() => setShowCalendar(!showCalendar)}
+                            className="ml-2 w-10 h-10 rounded-full border-2 border-gray-300 flex items-center justify-center hover:bg-gray-100"
+                        >
+                            ▼
+                        </button>
+                        {showCalendar && (
+                            <div className="absolute top-12 right-0 z-10">
+                                {renderCalendar()}
+                            </div>
+                        )}
                     </div>
-                    <button 
-                        onClick={() => navigateWeek(1)}
-                        className="w-10 h-10 rounded-full border-2 border-black flex items-center justify-center hover:bg-gray-100 text-black"
-                    >
-                        →
-                    </button>
                 </div>
-
-                <table className="w-full border-collapse border border-gray-700">
-                    <thead>
-                        <tr>
-                            <th className="border border-gray-700 p-3 bg-gray-50 text-black">Days</th>
-                            <th className="border border-gray-700 p-3 bg-gray-50 text-black">Daily Total</th>
-                            <th className="border border-gray-700 p-3 bg-gray-50 text-black">Pay Code</th>
-                            <th className="border border-gray-700 p-3 bg-gray-50 text-black">Hours</th>
-                            <th className="border border-gray-700 p-3 bg-gray-50 text-black">Comments</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {dates.map((date, index) => (
-                            <tr key={index}>
-                                <td className="border border-gray-700 text-black p-3">
-                                    {date.getDate()} {date.toLocaleDateString('en-US', { weekday: 'long' })}
-                                </td>
-                                <td className="border border-gray-700 text-black p-3">0.00</td>
-                                <td className="border border-gray-700 text-black p-3">Regular</td>
-                                <td className="border border-gray-700 text-black p-3">0.00</td>
-                                <td className="border border-gray-700 text-black p-3"></td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+                <button 
+                    onClick={() => navigateWeek(1)}
+                    className="w-10 h-10 rounded-full border-2 border-gray-300 flex items-center justify-center hover:bg-gray-100"
+                >
+                    →
+                </button>
             </div>
+
+            <table className="w-full border-collapse border border-gray-300">
+                <thead>
+                    <tr>
+                        <th className="border border-gray-300 p-3 bg-gray-50 text-black">Days</th>
+                        <th className="border border-gray-300 p-3 bg-gray-50 text-black">Daily Total</th>
+                        <th className="border border-gray-300 p-3 bg-gray-50 text-black">Pay Code</th>
+                        <th className="border border-gray-300 p-3 bg-gray-50 text-black">Hours</th>
+                        <th className="border border-gray-300 p-3 bg-gray-50 text-black">Comments</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {dates.map((date, index) => (
+                        <tr key={index}>
+                            <td className="border border-gray-300 p-3">
+                                {date.getDate()} {date.toLocaleDateString('en-US', { weekday: 'long' })}
+                            </td>
+                            <td className="border border-gray-300 p-3">0.00</td>
+                            <td className="border border-gray-300 p-3">Regular</td>
+                            <td className="border border-gray-300 p-3">0.00</td>
+                            <td className="border border-gray-300 p-3"></td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
         </div>
     );
 };
