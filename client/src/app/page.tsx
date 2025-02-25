@@ -1,5 +1,5 @@
 import { FormLogIn } from "@/app/login/page"
-import TimeLog  from "@/app/time_log_KB/TL"
+import TimeLog  from "@/app/time_log/TL"
 import SchedulePage from "./schedule/page"
 
 export default function Home() {
