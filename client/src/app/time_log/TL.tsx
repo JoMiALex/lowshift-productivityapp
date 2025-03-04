@@ -1,8 +1,5 @@
 'use client'
 import React, { useState, useEffect } from 'react';
-// import { TimeLogEntry } from './TimeLog';
-// import {readData, updateData} from './firebase';
-// import { getFirestore, collection, addDoc, getDocs, query, where } from "lib/firebase/firestore";
 // import { getWeekTimeLogEntries, addTimeLogEntry, updateTimeLogEntry } from '../../../lib/firebase';
 // import { getWeekTimeLogEntries, TimeLogEntry } from 'lib/firebase';
 // import { initialize } from '../../../node_modules/next/dist/server/lib/render-server';
