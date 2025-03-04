@@ -1,50 +1,17 @@
 'use client'
 import React, { useState, useEffect } from 'react';
-// import { TimeLogEntry } from './TimeLog';
-// import {readData, updateData} from './firebase';
-// import { getFirestore, collection, addDoc, getDocs, query, where } from "lib/firebase/firestore";
-// import { getWeekTimeLogEntries, addTimeLogEntry, updateTimeLogEntry } from '../../../lib/firebase';
-// import { getWeekTimeLogEntries, TimeLogEntry } from 'lib/firebase';
-// import { initialize } from '../../../node_modules/next/dist/server/lib/render-server';
-
-// import { getWeekTimeLogEntries, TimeLogEntry } from 'firestoreService';
-
-
-// export interface TimeLogEntry {
-//     id?: string;
-//     start: Date;
-//     end: Date;
-//     hours: number;
-//     pay_code: string;
-//     comments?: string;
-//   }
 
 const TimeLog = () => {
     const [currentStartDate, setCurrentStartDate] = useState(new Date());
     const [currentCalendarDate, setCurrentCalendarDate] = useState(new Date());
     const [showCalendar, setShowCalendar] = useState(false);
-    // const [timeLogEntries, setTimeLogEntries] = useState<TimeLogEntry[]>([]);
-    // const [isLoading, setIsLoading] = useState(false);
-    // const [editingEntry, setEditingEntry] = useState<{day: Number, entry: TimeLogEntry | null}>({ day: -1, entry: null});
-
-    // const entriesByDate: Record<string, TimeLogEntry[]> = {};
-    // timeLogEntries.forEach(entry => {
-    //     const dateStr = entry.start.toDateString();
-    //     if (!entriesByDate[dateStr]) {
-    //         entriesByDate[dateStr] = [];
-    //     }
-    //     entriesByDate[dateStr].push(entry);
-    // });
-
 
     const getWeekDates = (date: Date) => {
         const currentDay = date.getDay();
         const sunday = new Date(date);
         sunday.setDate(date.getDate() - currentDay);
-        // sunday.setHours(0, 0, 0, 0);
         const saturday = new Date(sunday);
         saturday.setDate(sunday.getDate() + 6);
-        // saturday.setHours(23, 59, 59, 999);
         return { start: sunday, end: saturday };
     };
 
@@ -67,77 +34,6 @@ const TimeLog = () => {
         setCurrentStartDate(weekDates.start);
         setShowCalendar(false);
     };
-
-    // // Fetch time log entries when the week changes
-    // useEffect(() => {
-    //     async function fetchTimeLogEntries() {
-    //         setIsLoading(true);
-    //         try {
-    //             const weekDates = getWeekDates(currentStartDate);
-    //             const entries = await getWeekTimeLogEntries(weekDates.start, weekDates.end);
-    //             setTimeLogEntries(entries);
-    //         } catch (error) {
-    //             console.error("Error fetching time log entries:", error);
-    //         } finally {
-    //             setIsLoading(false);
-    //         }
-    //     }
-
-    //     fetchTimeLogEntries();
-    // }, [currentStartDate]);
-
-    // const getDailyTotal = (date: Date) => {
-    //     const dateStr = date.toDateString();
-    //     if(!entriesByDate[dateStr]) return 0;
-
-    //     return entriesByDate[dateStr].reduce((total, entry) => total + entry.hours, 0);
-    // };
-
-    // const handleAddEntry = async (date: Date) => {
-    //     // Create a new entry with default values
-    //     const startHour = 9; // Default to 9 AM
-    //     const endHour = 17;  // Default to 5 PM
-        
-    //     const start = new Date(date);
-    //     start.setHours(startHour, 0, 0, 0);
-        
-    //     const end = new Date(date);
-    //     end.setHours(endHour, 0, 0, 0);
-        
-    //     const hours = endHour - startHour;
-        
-    //     const newEntry: TimeLogEntry = {
-    //         start,
-    //         end,
-    //         hours,
-    //         pay_code: 'Regular',
-    //         comments: ''
-    //     };
-        
-    //     try {
-    //         const addedEntry = await addTimeLogEntry(newEntry);
-    //         setTimeLogEntries([...timeLogEntries, addedEntry]);
-    //         setEditingEntry({ day: date.getDay(), entry: addedEntry });
-    //     } catch (error) {
-    //         console.error("Error adding entry:", error);
-    //     }
-    // };
-
-    // const handleUpdateEntry = async (id: string, updates: Partial<TimeLogEntry>) => {
-    //     try {
-    //         await updateTimeLogEntry(id, updates);
-            
-    //         // Update the local state
-    //         setTimeLogEntries(timeLogEntries.map(entry => 
-    //             entry.id === id ? { ...entry, ...updates } : entry
-    //         ));
-            
-    //         // Clear editing state
-    //         setEditingEntry({ day: -1, entry: null });
-    //     } catch (error) {
-    //         console.error("Error updating entry:", error);
-    //     }
-    // };
 
     const renderCalendar = () => {
         const today = new Date();
@@ -210,126 +106,6 @@ const TimeLog = () => {
         return date;
     });
 
-    // const getEntriesForDay = (date: Date) => {
-    //     const dateStr = date.toDateString();
-    //     return entriesByDate[dateStr] || [];
-    // }
-
-    // const renderEntriesForDay = (date: Date, dayIndex: number) => {
-    //     const entries = getEntriesForDay(date);
-        
-    //     if (entries.length === 0) {
-    //         return (
-    //             <tr>
-    //                 <td className="border border-gray-700 text-black p-3">
-    //                     {date.getDate()} {date.toLocaleDateString('en-US', { weekday: 'long' })}
-    //                 </td>
-    //                 <td className="border border-gray-700 text-black p-3">0.00</td>
-    //                 <td className="border border-gray-700 text-black p-3">
-    //                     <button 
-    //                         onClick={() => handleAddEntry(date)}
-    //                         className="bg-blue-500 text-white px-2 py-1 rounded text-sm"
-    //                     >
-    //                         Add Entry
-    //                     </button>
-    //                 </td>
-    //                 <td className="border border-gray-700 text-black p-3">0.00</td>
-    //                 <td className="border border-gray-700 text-black p-3"></td>
-    //             </tr>
-    //         );
-    //     }
-
-    //     return entries.map((entry, entryIndex) => (
-    //         <tr key={entry.id || entryIndex}>
-    //             {entryIndex === 0 && (
-    //                 <td 
-    //                     className="border border-gray-700 text-black p-3" 
-    //                     rowSpan={entries.length}
-    //                 >
-    //                     {date.getDate()} {date.toLocaleDateString('en-US', { weekday: 'long' })}
-    //                 </td>
-    //             )}
-    //             {entryIndex === 0 && (
-    //                 <td 
-    //                     className="border border-gray-700 text-black p-3" 
-    //                     rowSpan={entries.length}
-    //                 >
-    //                     {getDailyTotal(date).toFixed(2)}
-    //                 </td>
-    //             )}
-    //             <td className="border border-gray-700 text-black p-3">
-    //                 {editingEntry.day === dayIndex && editingEntry.entry?.id === entry.id ? (
-    //                     <select 
-    //                         value={editingEntry.entry.pay_code}
-    //                         onChange={(e) => setEditingEntry({
-    //                             day: dayIndex,
-    //                             entry: { ...editingEntry.entry!, pay_code: e.target.value }
-    //                         })}
-    //                         className="w-full p-1 border rounded"
-    //                     >
-    //                         <option value="Regular">Regular</option>
-    //                         <option value="Overtime">Overtime</option>
-    //                         <option value="Vacation">Vacation</option>
-    //                         <option value="Sick">Sick</option>
-    //                     </select>
-    //                 ) : (
-    //                     <span onClick={() => setEditingEntry({ day: dayIndex, entry })}>
-    //                         {entry.pay_code}
-    //                     </span>
-    //                 )}
-    //             </td>
-    //             <td className="border border-gray-700 text-black p-3">
-    //                 {editingEntry.day === dayIndex && editingEntry.entry?.id === entry.id ? (
-    //                     <input 
-    //                         type="number" 
-    //                         value={editingEntry.entry.hours}
-    //                         onChange={(e) => setEditingEntry({
-    //                             day: dayIndex,
-    //                             entry: { ...editingEntry.entry!, hours: parseFloat(e.target.value) }
-    //                         })}
-    //                         step="0.25"
-    //                         min="0"
-    //                         className="w-full p-1 border rounded"
-    //                     />
-    //                 ) : (
-    //                     <span onClick={() => setEditingEntry({ day: dayIndex, entry })}>
-    //                         {entry.hours.toFixed(2)}
-    //                     </span>
-    //                 )}
-    //             </td>
-    //             <td className="border border-gray-700 text-black p-3">
-    //                 {editingEntry.day === dayIndex && editingEntry.entry?.id === entry.id ? (
-    //                     <div className="flex gap-2">
-    //                         <input 
-    //                             type="text" 
-    //                             value={editingEntry.entry.comments || ''}
-    //                             onChange={(e) => setEditingEntry({
-    //                                 day: dayIndex,
-    //                                 entry: { ...editingEntry.entry!, comments: e.target.value }
-    //                             })}
-    //                             className="flex-1 p-1 border rounded"
-    //                         />
-    //                         <button 
-    //                             onClick={() => {
-    //                                 if (entry.id && editingEntry.entry) {
-    //                                     handleUpdateEntry(entry.id, editingEntry.entry);
-    //                                 }
-    //                             }}
-    //                             className="bg-green-500 text-white px-2 py-1 rounded"
-    //                         >
-    //                             Save
-    //                         </button>
-    //                     </div>
-    //                 ) : (
-    //                     <span onClick={() => setEditingEntry({ day: dayIndex, entry })}>
-    //                         {entry.comments || ''}
-    //                     </span>
-    //                 )}
-    //             </td>
-    //         </tr>
-    //     ));
-    // };
-
     return (
         <div className="mt-20 mx-auto max-w-6xl">
             <div className="bg-white p-8 rounded-lg shadow-lg">
@@ -365,32 +141,6 @@ const TimeLog = () => {
                         →
                     </button>
                 </div>
-
-                {/* {isLoading ? (
-                    <div className="text-center py-8">
-                        <p className="text-black">Loading time log entries...</p>
-                    </div>
-                ) : (
-                    <table className="w-full border-collapse border border-gray-700">
-                        <thead>
-                            <tr>
-                                <th className="border border-gray-700 p-3 bg-gray-50 text-black">Days</th>
-                                <th className="border border-gray-700 p-3 bg-gray-50 text-black">Daily Total</th>
-                                <th className="border border-gray-700 p-3 bg-gray-50 text-black">Pay Code</th>
-                                <th className="border border-gray-700 p-3 bg-gray-50 text-black">Hours</th>
-                                <th className="border border-gray-700 p-3 bg-gray-50 text-black">Comments</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {dates.map((date, index) => (
-                                renderEntriesForDay(date, index)
-                            ))}
-                        </tbody>
-                    </table>
-                )}
-            </div>
-        </div>
-    ); */}
 
                 <table className="w-full border-collapse border border-gray-700">
                     <thead>
