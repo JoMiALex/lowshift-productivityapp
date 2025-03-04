@@ -5,7 +5,20 @@ export default function SchedulePage() {
     // Placeholder shifts...
     const scheduleData: WeekSchedule = {
         startDate: new Date("2025-02-12"),
-        days: [],
+        days: [
+            {
+                date: new Date("2023-06-05"),
+                shifts: [
+                    {
+                        id: "1",
+                        employeeName: "John Doe",
+                        start: new Date("2023-06-05T09:00:00"),
+                        end: new Date("2023-06-05T17:00:00"),
+                    },
+
+                ],
+            },
+        ],
     }
 
     return (
