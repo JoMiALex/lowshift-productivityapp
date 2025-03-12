@@ -6,7 +6,9 @@ import TimeClock from "./timeclock/TimeClock"
 
 export default function Home() {
   return (
-    <TimeClock />
+    <main className="min-h-screen">
+      <TimeLog />
+    </main>
   )
 }
 
