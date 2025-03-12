@@ -1,13 +1,13 @@
 import { FormLogIn } from "@/app/login/page"
-import TimeLog  from "@/app/time_log/TL"
+import TimeLog  from "@/app/time_log/page"
 import SchedulePage from "./schedule/page"
-import Checklist from "./Checklist/checklistScript"
-import TimeClock from "./timeclock/TimeClock"
+import Checklist from "./Checklist/page"
+import TimeClock from "./timeclock/page"
 
 export default function Home() {
   return (
     <main className="min-h-screen">
-      <TimeLog />
+      <FormLogIn />
     </main>
   )
 }

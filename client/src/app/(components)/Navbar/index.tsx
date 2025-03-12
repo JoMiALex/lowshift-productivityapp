@@ -38,12 +38,13 @@ const Navbar = () => {
 
     {/* Modal */}
     <div 
-      className={`fixed top-0 left-0 h-screen w-64 bg-gray-600 transform transition-transform duration-300 ease-in-out ${
-        isModalOpen ? 'translate-x-0' : '-translate-x-full'
-      } z-50`}
+      className={
+        `fixed top-0 left-0 h-screen w-64 bg-gray-600 transform transition-transform duration-300 ease-in-out 
+        ${ isModalOpen ? 'translate-x-0' : '-translate-x-full' } z-50`
+        }
     >
       <div className="p-6">
-      <button 
+        <button 
           className="absolute top-3 right-3 px-3 py-3 rounded-full hover:bg-gray-800"
           onClick={() => setIsModalOpen(false)}
         >
@@ -53,10 +54,47 @@ const Navbar = () => {
         <div className="mt-4">
           <h2 className="text-xl font-bold mb-4">Menu</h2>
           <nav>
-            <ul className="space-y-3">
-              <li><a href="#" className="hover:text-gray-400">Home</a></li>
-              <li><a href="#" className="hover:text-gray-400">Dashboard</a></li>
-              <li><a href="#" className="hover:text-gray-400">Settings</a></li>
+          <ul className="space-y-3">
+              <li>
+                <button 
+                  onClick={() => handleNavigation('/login')}
+                  className="hover:text-gray-300"
+                >
+                  Home
+                </button>
+              </li>
+              <li>
+                <button 
+                  onClick={() => handleNavigation('/Checklist')}
+                  className="hover:text-gray-300"
+                >
+                  Shift Page
+                </button>
+              </li>
+              <li>
+                <button 
+                  onClick={() => handleNavigation('/timeclock')}
+                  className="hover:text-gray-300"
+                >
+                  Clock In/Out
+                </button>
+              </li>
+              <li>
+                <button 
+                  onClick={() => handleNavigation('/schedule')}
+                  className="hover:text-gray-300"
+                >
+                  Schedule
+                </button>
+              </li>
+              <li>
+                <button 
+                  onClick={() => handleNavigation('/time_log')}
+                  className="hover:text-gray-300"
+                >
+                  Time Log
+                </button>
+              </li>
             </ul>
           </nav>
         </div>

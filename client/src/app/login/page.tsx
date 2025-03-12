@@ -1,28 +1,26 @@
 'use client'
 import React, { useState } from "react";
 import Image from "next/image";
+import { useRouter } from 'next/navigation';
 
 export const FormLogIn = () => {
     const [isSupervisor, setIsSupervisor] = useState(false);
     const [isShiftView, setIsShiftView] = useState(false);
+    const router = useRouter();
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen">
-            <div className="absolute top-20 text-center text-white text-4xl font-normal leading-tight" style={{ width: '497px', fontFamily: 'Inter' }}>
-                LowShift
-            </div>
-
             <div className="flex flex-col items-center space-y-4 w-[600px] p-8 bg-white rounded-lg border border-solid border-[#d9d9d9] shadow-lg">
                 <div className="flex flex-col items-start gap-2 w-full">
                     <div className="self-stretch relative font-body-base font-medium text-[#1e1e1e] text-base tracking-normal leading-normal">
                         Username:
                     </div>
 
-                    <div className="flex items-center px-5 py-4 w-full bg-white rounded-lg border border-solid border-[#d9d9d9]">
-                        <div className="relative flex-1 font-single-line-body-base font-medium text-[#b3b3b3] text-base tracking-normal leading-normal">
-                            Value
-                        </div>
-                    </div>
+                    <input 
+                        type="text" 
+                        placeholder="Enter your username" 
+                        className="flex items-center px-5 py-4 w-full bg-white rounded-lg border border-solid border-[#d9d9d9] text-black"
+                    />
                 </div>
 
                 <div className="flex flex-col items-start gap-2 w-full">
@@ -30,15 +28,17 @@ export const FormLogIn = () => {
                         Password:
                     </div>
 
-                    <div className="flex items-center px-5 py-4 w-full bg-white rounded-lg border border-solid border-[#d9d9d9]">
-                        <div className="relative flex-1 font-single-line-body-base font-medium text-[#b3b3b3] text-base tracking-normal leading-normal">
-                            Value
-                        </div>
-                    </div>
+                    <input 
+                        type="password" 
+                        placeholder="Enter your password" 
+                        className="flex items-center px-5 py-4 w-full bg-white rounded-lg border border-solid border-[#d9d9d9] text-black"
+                    />
                 </div>
 
                 <div className="flex flex-col items-start gap-2.5 w-full">
-                <button className="w-full py-3 text-lg bg-[#2c2c2c] text-white rounded-md hover:bg-black transition duration-300">
+                    <button className="w-full py-3 text-lg bg-[#2c2c2c] text-white rounded-md hover:bg-black transition duration-300"
+                    onClick={() => router.push('/schedule')}
+                    >
                         Sign In
                     </button>
                 </div>
@@ -90,3 +90,5 @@ export const FormLogIn = () => {
         </div>
     );
 };
+
+export default FormLogIn;
