@@ -1,6 +1,8 @@
 export interface TimeLogEntry {
-    start: Date;
-    end: Date;
-    hours: number;
-    pay_code: string;
-  }
+  id?: string;
+  start: Date;
+  end: Date;
+  hours: number;
+  pay_code: string;
+  comments?: string;
+}
