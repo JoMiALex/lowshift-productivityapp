@@ -7,9 +7,9 @@ export default function Home() {
   return (
     <main className="min-h-screen">
       {/*<FormLogIn /> John Michael Test Page */}
-      {<TimeLog />}
-      {/* <SchedulePage /> */}
-      {/* <Checklist /> */}
+      {/* {<TimeLog />} */}
+      <SchedulePage />
+      {/* {<Checklist />} */}
     </main>
   )
 }
