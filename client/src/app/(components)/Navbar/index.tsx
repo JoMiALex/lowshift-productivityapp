@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from 'react'
-import { Menu } from 'lucide-react'
+import { Menu, X } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 
@@ -27,12 +27,28 @@ const Navbar = () => {
             </button>
         </div>
 
+        {/* CENTER */}
+        <div className="flex justify-center items-center">
+            <img src="/images/logo.png" alt="logo" className="w-10 h-10 mr-2" />
+            <h1 className="text-2xl font-bold text-white">LowShift</h1>
+        </div>
+
         {/* RIGHT SIDE */}
-        <div className="relative">
-            <div className="absolute inset-y-0 right-5 pl-3 flex items-center">
-                <img src="/images/logo.png" alt="logo" className="w-10 h-10 mr-2" />
-                <h1 className="text-2xl font-bold text-white">LowShift</h1>
-            </div>
+        <div className="flex justify-between items-center gap-5 pr-5">
+            Profile
+            <button 
+              className="flex items-center gap-2 rounded-full hover:bg-gray-700"
+              onClick={() => handleNavigation('/profile')}
+            >
+              <div className="w-7 h-7 bg-white rounded-full"></div>
+            </button>
+            Logout
+            <button 
+              className="flex items-center gap-2 px-3 py-3 bg-black rounded-full hover:bg-gray-700"
+              onClick={() => handleNavigation('/login')}
+            >
+              <X className="w-4 h-4"/>
+            </button>
         </div>
     </div>
 
@@ -57,7 +73,7 @@ const Navbar = () => {
           <ul className="space-y-3">
               <li>
                 <button 
-                  onClick={() => handleNavigation('/login')}
+                  onClick={() => handleNavigation('/Home')}
                   className="hover:text-gray-300"
                 >
                   Home

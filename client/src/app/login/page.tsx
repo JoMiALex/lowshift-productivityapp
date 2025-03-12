@@ -37,7 +37,7 @@ export const FormLogIn = () => {
 
                 <div className="flex flex-col items-start gap-2.5 w-full">
                     <button className="w-full py-3 text-lg bg-[#2c2c2c] text-white rounded-md hover:bg-black transition duration-300"
-                    onClick={() => router.push('/schedule')}
+                    onClick={() => router.push('/Home')}
                     >
                         Sign In
                     </button>
