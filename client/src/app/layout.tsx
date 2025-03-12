@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import DashboardWrapper from "./dashboardWrapper";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,7 +28,12 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-emerald-900`}
       >
-        {children}
+        <DashboardWrapper>
+          <div className="bg-gray-200 rounded-lg p-5">
+            {children}
+          </div>
+        </DashboardWrapper>
+        {/* {children} */}
       </body>
     </html>
   );
