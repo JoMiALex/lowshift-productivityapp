@@ -22,8 +22,8 @@ export default function SchedulePage() {
     }
 
     return (
-        <div className="flex flex-col min-h-screen bg-background">
-            <main className="flex-1 overflow-x-hidden overflow-y-auto bg-background p-4">
+        <div className="flex flex-col min-h-screen bg-emerald-900">
+            <main className="flex-1 overflow-x-hidden overflow-y-auto p-4">
                 <ScheduleView schedule={scheduleData} />
             </main>
         </div>
