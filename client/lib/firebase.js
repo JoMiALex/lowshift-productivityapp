@@ -1,7 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
-import { getFirestore } from "firebase/firestore";
+// import { getFirestore } from "firebase/firestore";
 
 
 // TODO: Add SDKs for Firebase products that you want to use
@@ -16,6 +16,7 @@ import { getFirestore } from "firebase/firestore";
 //   doc, 
 //   Timestamp 
 // } from "firebase/firestore";
+import { getFirestore } from "firebase/firestore";  //collection, query, where, getDocs, addDoc, updateDoc, doc, Timestamp
 // https://firebase.google.com/docs/web/setup#available-libraries
 
 // Your web app's Firebase configuration
@@ -36,6 +37,7 @@ const analytics = getAnalytics(app);
 export const db = getFirestore(app);
 
 // // // Get time log entries for a specific week
+// // Get time log entries for a specific week
 // export const getWeekTimeLogEntries = async (startDate, endDate) => {
 //   try {
 //     const clockingRef = collection(db, 'clocking');
