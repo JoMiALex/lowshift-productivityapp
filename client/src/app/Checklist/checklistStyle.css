@@ -1,16 +1,16 @@
-
 .checklist-container {
     max-width: 600px;
-    margin: 50px auto;
+    margin: 20px auto;
     padding: 20px;
-    background: var(--text-color);
+    background: rgb(50, 50, 199); /* Matching sidebar background */
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     text-align: center;
+    color: #d99f18; /* Matching sidebar text color */
 }
 
 h2 {
-    color: var(--second-bg-color);
+    color: #d99f18; /* Matching sidebar text color */
     margin-bottom: 20px;
 }
 
@@ -21,58 +21,63 @@ h2 {
     margin-bottom: 20px;
 }
 
-    .task-input input {
-        flex: 1;
-        padding: 10px;
-        border: 1px solid var(--main-color);
-        border-radius: 5px;
-    }
+.task-input input {
+    flex: 1;
+    padding: 10px;
+    border: 2px solid #818181; /* Matching button border */
+    border-radius: 5px;
+    background: white;
+    color: black;
+}
 
-    .task-input button {
-        background: var(--second-bg-color);
-        color: var(--text-color);
-        border: none;
-        padding: 10px 15px;
-        border-radius: 5px;
-        cursor: pointer;
-    }
+.task-input button {
+    background: #818181; /* Matching hover color */
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
 
-        .task-input button:hover {
-            background: var(--main-color);
-        }
+.task-input button:hover {
+    background: #d99f18; /* Matching sidebar text color */
+}
 
 #taskList {
     list-style: none;
     padding: 0;
 }
 
-    #taskList li {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 10px;
-        border-bottom: 1px solid var(--main-color);
-        font-size: 16px;
-    }
+#taskList li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 2px solid #818181; /* Matching button border */
+    font-size: 16px;
+    color: white;
+}
 
-        #taskList li input[type="checkbox"] {
-            margin-right: 10px;
-        }
+#taskList li input[type="checkbox"] {
+    margin-right: 10px;
+}
 
-        #taskList li .completed {
-            text-decoration: line-through;
-            color: var(--main-color);
-        }
+#taskList li .completed {
+    text-decoration: line-through;
+    color: #d99f18; /* Matching sidebar text color */
+}
 
-        #taskList li button {
-            background: var(--main-color);
-            border: none;
-            padding: 5px 10px;
-            border-radius: 5px;
-            color: var(--text-color);
-            cursor: pointer;
-        }
+#taskList li button {
+    background: #d99f18; /* Matching sidebar text color */
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+    transition: background 0.3s;
+}
 
-            #taskList li button:hover {
-                background: var(--second-bg-color);
-            }
+#taskList li button:hover {
+    background: #818181; /* Matching hover color */
+}
