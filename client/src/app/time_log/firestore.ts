@@ -1,12 +1,12 @@
 import { 
-    collection, 
-    query, 
-    where, 
-    getDocs, 
-    Timestamp 
-  } from "firebase/firestore";
-  import { db } from './firebase';
-  import { TimeLogEntry } from './TimeLog';
+  collection, 
+  query, 
+  where, 
+  getDocs, 
+  Timestamp 
+} from "../../../lib/firebase";
+import { db } from '../../../lib/firebase'; // Make sure this matches the first import path
+import { TimeLogEntry } from './TimeLog';
   
   // Get time log entries for a specific week
   export const getWeekTimeLogEntries = async (startDate: Date, endDate: Date): Promise<TimeLogEntry[]> => {

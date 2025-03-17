@@ -1,17 +1,13 @@
 'use client'
 import React, { useState, useEffect } from 'react';
-
-// import { getWeekTimeLogEntries, addTimeLogEntry, updateTimeLogEntry } from '../../../lib/firebase';
-// import { getWeekTimeLogEntries, TimeLogEntry } from 'lib/firebase';
-// import { initialize } from '../../../node_modules/next/dist/server/lib/render-server';
-
-
+import { TimeLogEntry } from './TimeLog'; // Adjust path as needed
 
 const TimeLog = () => {
     const [currentStartDate, setCurrentStartDate] = useState(new Date());
     const [currentCalendarDate, setCurrentCalendarDate] = useState(new Date());
     const [showCalendar, setShowCalendar] = useState(false);
-
+    const [entries, setEntries] = useState<TimeLogEntry[]>([]);
+    const [loading, setLoading] = useState(false);
 
     const getWeekDates = (date: Date) => {
         const currentDay = date.getDay();
@@ -41,6 +37,39 @@ const TimeLog = () => {
         setCurrentStartDate(weekDates.start);
         setShowCalendar(false);
     };
+
+    const fetchTimeLogEntries = async (start: Date, end: Date) => {
+        try {
+            const params = new URLSearchParams({
+                startDate: start.toISOString(),
+                endDate: end.toISOString()
+            });
+            
+            const response = await fetch(`/api/time-logs?${params}`);
+            
+            if (!response.ok) {
+                throw new Error('Failed to fetch time logs');
+            }
+            
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error('Error fetching time logs:', error);
+            return [];
+        }
+    };
+
+    useEffect(() => {
+        const loadTimeLogEntries = async () => {
+            setLoading(true);
+            const weekDates = getWeekDates(currentStartDate);
+            const data = await fetchTimeLogEntries(weekDates.start, weekDates.end);
+            setEntries(data);
+            setLoading(false);
+        };
+        
+        loadTimeLogEntries();
+    }, [currentStartDate]); // This will reload data whenever the week changes
 
     const renderCalendar = () => {
         const today = new Date();
@@ -113,8 +142,6 @@ const TimeLog = () => {
         return date;
     });
 
-
-
     return (
         <div className="mt-20 mx-auto max-w-6xl">
             <div className="bg-white p-8 rounded-lg shadow-lg">
@@ -151,31 +178,63 @@ const TimeLog = () => {
                     </button>
                 </div>
 
-
-                <table className="w-full border-collapse border border-gray-700">
-                    <thead>
-                        <tr>
-                            <th className="border border-gray-700 p-3 bg-gray-50 text-black">Days</th>
-                            <th className="border border-gray-700 p-3 bg-gray-50 text-black">Daily Total</th>
-                            <th className="border border-gray-700 p-3 bg-gray-50 text-black">Pay Code</th>
-                            <th className="border border-gray-700 p-3 bg-gray-50 text-black">Hours</th>
-                            <th className="border border-gray-700 p-3 bg-gray-50 text-black">Comments</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {dates.map((date, index) => (
-                            <tr key={index}>
-                                <td className="border border-gray-700 text-black p-3">
-                                    {date.getDate()} {date.toLocaleDateString('en-US', { weekday: 'long' })}
-                                </td>
-                                <td className="border border-gray-700 text-black p-3">0.00</td>
-                                <td className="border border-gray-700 text-black p-3">Regular</td>
-                                <td className="border border-gray-700 text-black p-3">0.00</td>
-                                <td className="border border-gray-700 text-black p-3"></td>
+                {loading ? (
+                    <div className="text-center p-10 text-black">Loading time logs...</div>
+                ) : (
+                    <table className="w-full border-collapse border border-gray-700">
+                        <thead>
+                            <tr>
+                                <th className="border border-gray-700 p-3 bg-gray-50 text-black">Days</th>
+                                <th className="border border-gray-700 p-3 bg-gray-50 text-black">Daily Total</th>
+                                <th className="border border-gray-700 p-3 bg-gray-50 text-black">Pay Code</th>
+                                <th className="border border-gray-700 p-3 bg-gray-50 text-black">Hours</th>
+                                <th className="border border-gray-700 p-3 bg-gray-50 text-black">Comments</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            {dates.map((date, index) => {
+                                // Filter entries for this specific date
+                                const dayEntries = entries.filter(entry => {
+                                    const entryDate = new Date(entry.start);
+                                    return entryDate.getDate() === date.getDate() && 
+                                          entryDate.getMonth() === date.getMonth() && 
+                                          entryDate.getFullYear() === date.getFullYear();
+                                });
+                                
+                                // Calculate daily total
+                                const dailyTotal = dayEntries.reduce((sum, entry) => sum + entry.hours, 0);
+                                
+                                return (
+                                    <tr key={index}>
+                                        <td className="border border-gray-700 text-black p-3">
+                                            {date.getDate()} {date.toLocaleDateString('en-US', { weekday: 'long' })}
+                                        </td>
+                                        <td className="border border-gray-700 text-black p-3">{dailyTotal.toFixed(2)}</td>
+                                        {dayEntries.length > 0 ? (
+                                            <>
+                                                <td className="border border-gray-700 text-black p-3">
+                                                    {dayEntries[0].pay_code}
+                                                </td>
+                                                <td className="border border-gray-700 text-black p-3">
+                                                    {dayEntries[0].hours.toFixed(2)}
+                                                </td>
+                                                <td className="border border-gray-700 text-black p-3">
+                                                    {dayEntries[0].comments || ""}
+                                                </td>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <td className="border border-gray-700 text-black p-3">Regular</td>
+                                                <td className="border border-gray-700 text-black p-3">0.00</td>
+                                                <td className="border border-gray-700 text-black p-3"></td>
+                                            </>
+                                        )}
+                                    </tr>
+                                );
+                            })}
+                        </tbody>
+                    </table>
+                )}
             </div>
         </div>
     );
