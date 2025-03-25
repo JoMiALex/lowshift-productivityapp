@@ -37,17 +37,18 @@ const TimeLog = () => {
         setCurrentStartDate(weekDates.start);
         setShowCalendar(false);
     };
-
+//try using only one date (start) as a parameter to connect to hours
     const fetchTimeLogEntries = async (start: Date, end: Date) => {
         try {
             const params = new URLSearchParams({
                 startDate: start.toISOString(),
                 endDate: end.toISOString()
-            });
+            }); 
             
             const response = await fetch(`/api/time-logs?${params}`);
             
             if (!response.ok) {
+                console.log(response);
                 throw new Error('Failed to fetch time logs');
             }
             
@@ -59,11 +60,29 @@ const TimeLog = () => {
         }
     };
 
+    const fetchPayCodes = async () => {
+        try {
+          const response = await fetch('/api/time-logs?type=payCodes');
+          
+          if (!response.ok) {
+            console.log(response);
+            throw new Error('Failed to fetch pay codes');
+          }
+          
+          const payCodes = await response.json();
+          return payCodes;
+        } catch (error) {
+          console.error('Error fetching pay codes:', error);
+          return [];
+        }
+      };
+
     useEffect(() => {
         const loadTimeLogEntries = async () => {
             setLoading(true);
             const weekDates = getWeekDates(currentStartDate);
             const data = await fetchTimeLogEntries(weekDates.start, weekDates.end);
+            fetchPayCodes();
             setEntries(data);
             setLoading(false);
         };
