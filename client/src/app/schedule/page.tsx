@@ -1,5 +1,7 @@
 import type { WeekSchedule } from "@/app/schedule/schedule"
 import ScheduleView from "@/app/schedule/ScheduleView"
+//import { initializeApp } from 'firebase/app'
+//import { getFirestore } from 'firebase/firestore'
 
 export default function SchedulePage() {
     // Placeholder shifts...
