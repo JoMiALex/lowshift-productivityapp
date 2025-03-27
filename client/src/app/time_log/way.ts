@@ -7,6 +7,7 @@ import {
   Timestamp,
   db 
 } from '../../../lib/firebase';
+import { TimeLogEntry } from './TimeLog';
 
 export async function GET(request: NextRequest) {
   try {
@@ -27,7 +28,6 @@ export async function GET(request: NextRequest) {
         if (data.pay_code) {
           payCodes.add(data.pay_code);
         } else {
-          // Add default if no pay code exists
           payCodes.add('Regular');
         }
       });
@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(Array.from(payCodes));
     }
 
-    // Existing time logs fetch logic
+    // Time logs fetch logic
     const startDate = searchParams.get('startDate');
     
     if (!startDate) {
@@ -56,15 +56,17 @@ export async function GET(request: NextRequest) {
     );
     
     const querySnapshot = await getDocs(q);
-    const entries: any[] = [];
+    const entries: TimeLogEntry[] = [];
     
     querySnapshot.forEach((doc) => {
       const data = doc.data();
       entries.push({
         id: doc.id,
-        ...data,
         start: data.start.toDate(),
-        end: data.end.toDate()
+        end: data.end.toDate(),
+        hours: data.hours || 0,
+        pay_code: data.pay_code || 'Regular',
+        comments: data.comments || ''
       });
     });
     

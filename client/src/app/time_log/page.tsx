@@ -38,25 +38,29 @@ const TimeLog = () => {
         setShowCalendar(false);
     };
 //try using only one date (start) as a parameter to connect to hours
-    const fetchTimeLogEntries = async (start: Date, end: Date) => {
+    const fetchTimeLogEntries = async (start: Date, end: Date): Promise<TimeLogEntry[]> => {
         try {
-            const params = new URLSearchParams({
-                startDate: start.toISOString(),
-                endDate: end.toISOString()
-            }); 
-            
-            const response = await fetch(`/api/time-logs?${params}`);
-            
-            if (!response.ok) {
-                console.log(response);
-                throw new Error('Failed to fetch time logs');
-            }
-            
-            const data = await response.json();
-            return data;
+        // Use your existing backend API route instead of direct Firestore REST API
+        const params = new URLSearchParams({
+            startDate: start.toISOString(),
+            endDate: end.toISOString()
+        });
+
+        console.log('Fetch URL:', `/api/time-logs?${params.toString()}`)
+      
+        const response = await fetch(`/api/time-logs?${params.toString()}`);
+      
+        if (!response.ok) {
+            console.error('Response status:', response.status);
+            console.error('Response text:', await response.text());
+            throw new Error('Failed to fetch time logs');
+        }
+      
+        const data: TimeLogEntry[] = await response.json();
+        return data;
         } catch (error) {
-            console.error('Error fetching time logs:', error);
-            return [];
+        console.error('Error fetching time logs:', error);
+        return [];
         }
     };
 
