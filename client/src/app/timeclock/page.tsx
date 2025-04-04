@@ -2,7 +2,13 @@
 
 import React, { useEffect, useState } from 'react';
 import './tcStyle.css';
+import { collection, addDoc } from 'firebase/firestore';
 
+// Add item to database
+
+// Read items from database
+
+// Add item to database
 const TimeClock: React.FC = () => {
     const [time, setTime] = useState(new Date());
 
