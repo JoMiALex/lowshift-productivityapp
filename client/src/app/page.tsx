@@ -5,7 +5,7 @@ import { FormLogIn } from "@/app/login/page"
 import TimeLog  from "@/app/time_log/page"
 import SchedulePage from "./schedule/page"
 import Checklist from "./Checklist/page"
-import TimeClock from "./timeclock/page"
+import TimeClock from "./timeclock/timeClock"
 import { use } from "react"
 
 export default function Home() {
