@@ -2,7 +2,7 @@
 This is a work productivity application used for shift managment, hourly clockings and other shift employee related management tasks.
 
 ## Team Members
-John Michael Lott (Project Lead)
+John Michael Lott (Project Lead)<br>
 Ian Gabriel Vista
 
 
