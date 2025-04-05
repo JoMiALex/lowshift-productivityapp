@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import './tcStyle.css';
-import { db } from './tcFireBase';
+import { db } from './../../../lib/firebase';
 import { doc, setDoc, getDoc, updateDoc, collection, addDoc, Timestamp } from "firebase/firestore";
 
 const TimeClock: React.FC = () => {
