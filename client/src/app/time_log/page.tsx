@@ -8,6 +8,7 @@ const TimeLog = () => {
     const [showCalendar, setShowCalendar] = useState(false);
     const [entries, setEntries] = useState<TimeLogEntry[]>([]);
     const [loading, setLoading] = useState(false);
+    const [payCodes, setPayCodes] = useState<string[]>([]);
 
     const getWeekDates = (date: Date) => {
         const currentDay = date.getDay();
@@ -40,20 +41,15 @@ const TimeLog = () => {
 //try using only one date (start) as a parameter to connect to hours
     const fetchTimeLogEntries = async (start: Date, end: Date): Promise<TimeLogEntry[]> => {
         try {
-        // Use your existing backend API route instead of direct Firestore REST API
         const params = new URLSearchParams({
             startDate: start.toISOString(),
             endDate: end.toISOString()
         });
-
-        console.log('Fetch URL:', `/api/time-logs?${params.toString()}`)
       
-        const response = await fetch(`/api/time-logs?${params.toString()}`);
+        const response = await fetch(`/time_log/api?${params.toString()}`);
       
         if (!response.ok) {
             console.error('Response status:', response.status);
-            console.error('Response text:', await response.text());
-            throw new Error('Failed to fetch time logs');
         }
       
         const data: TimeLogEntry[] = await response.json();
@@ -66,18 +62,16 @@ const TimeLog = () => {
 
     const fetchPayCodes = async () => {
         try {
-          const response = await fetch('/api/time-logs?type=payCodes');
+          const response = await fetch('/time_log/api?type=payCodes');
           
           if (!response.ok) {
-            console.log(response);
             throw new Error('Failed to fetch pay codes');
           }
           
-          const payCodes = await response.json();
-          return payCodes;
+          const codes = await response.json();
+          return codes;
         } catch (error) {
           console.error('Error fetching pay codes:', error);
-          return [];
         }
       };
 
@@ -85,13 +79,13 @@ const TimeLog = () => {
         const loadTimeLogEntries = async () => {
             setLoading(true);
             const weekDates = getWeekDates(currentStartDate);
-            const data = await fetchTimeLogEntries(weekDates.start, weekDates.end);
-            fetchPayCodes();
+            const data = await fetchTimeLogEntries(weekDates.start, weekDates.end);   
             setEntries(data);
             setLoading(false);
         };
         
         loadTimeLogEntries();
+        fetchPayCodes();
     }, [currentStartDate]); // This will reload data whenever the week changes
 
     const renderCalendar = () => {

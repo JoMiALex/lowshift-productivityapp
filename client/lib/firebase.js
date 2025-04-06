@@ -47,6 +47,6 @@ export {
   updateDoc, 
   doc, 
   Timestamp,
-  // DocumentData,
+  DocumentData,
   QueryDocumentSnapshot 
 };
