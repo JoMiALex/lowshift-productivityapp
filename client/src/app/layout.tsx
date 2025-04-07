@@ -22,7 +22,7 @@ export default function RootLayout({
 }>) {
   const pathname = usePathname();
 
-  const unwrappedRoutes = ["/","/login"];
+  const unwrappedRoutes = ["/","/login","/register"];
   const showDashboard = !unwrappedRoutes.includes(pathname);
 
   return (
