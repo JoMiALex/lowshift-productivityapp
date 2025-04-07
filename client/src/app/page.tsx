@@ -4,6 +4,8 @@ import { useRouter } from "next/navigation";
 
 export default function Home() {
   const router = useRouter();
+  const currUser = null; // Replace with actual user state management
+  const isLoggedIn = currUser !== null;
   return (
     <div className="flex min-h-screen flex-col items-center justify-center">
       <div className="text-center mb-8">
