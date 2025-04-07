@@ -53,6 +53,7 @@ const TimeLog = () => {
         }
       
         const data: TimeLogEntry[] = await response.json();
+        console.log('Fetched entries with IDs:', data.map(entry => entry.id))
         return data;
         } catch (error) {
         console.error('Error fetching time logs:', error);
@@ -69,7 +70,7 @@ const TimeLog = () => {
           }
           
           const codes = await response.json();
-          return codes;
+          setPayCodes(codes);
         } catch (error) {
           console.error('Error fetching pay codes:', error);
         }
