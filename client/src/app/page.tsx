@@ -1,15 +1,11 @@
 "use client";
 import { useRouter } from "next/navigation";
 
-import { FormLogIn } from "@/app/login/page"
-import TimeLog  from "@/app/time_log/page"
-import SchedulePage from "./schedule/page"
-import Checklist from "./Checklist/page"
-import TimeClock from "./timeclock/timeClock"
-import { use } from "react"
 
 export default function Home() {
   const router = useRouter();
+  const currUser = null; // Replace with actual user state management
+  const isLoggedIn = currUser !== null;
   return (
     <div className="flex min-h-screen flex-col items-center justify-center">
       <div className="text-center mb-8">
@@ -35,8 +31,3 @@ export default function Home() {
     </div>
   );
 }
-
-    {/*<FormLogIn /> John Michael Test Page */}
-    {/* <TimeLog /> */}
-    {/* <SchedulePage /> */}
-    {/* <Checklist /> */}

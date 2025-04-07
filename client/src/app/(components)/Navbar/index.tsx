@@ -45,7 +45,7 @@ const Navbar = () => {
             Logout
             <button 
               className="flex items-center gap-2 px-3 py-3 bg-black rounded-full hover:bg-gray-700"
-              onClick={() => handleNavigation('/login')}
+              onClick={() => handleNavigation('/')}
             >
               <X className="w-4 h-4"/>
             </button>
@@ -106,6 +106,14 @@ const Navbar = () => {
               <li>
                 <button 
                   onClick={() => handleNavigation('/time_log')}
+                  className="hover:text-gray-300"
+                >
+                  Time Log
+                </button>
+              </li>
+              <li>
+                <button 
+                  onClick={() => handleNavigation('/register')}
                   className="hover:text-gray-300"
                 >
                   Time Log
