@@ -31,15 +31,19 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-emerald-900`}
       >
         {showDashboard ? (
-        <DashboardWrapper>
-          <div className="bg-gray-200 rounded-lg p-5">
-            {children}
-          </div>
-        </DashboardWrapper>
+        <>
+          <DashboardWrapper>
+            <div className="bg-gray-200 rounded-lg p-5">
+              {children}
+            </div>
+          </DashboardWrapper>
+        </>
         ) : (
-          <div className="rounded-lg p-5">
-            {children}
-          </div>
+          <>
+            <div className="rounded-lg p-5">
+              {children}
+            </div>
+          </>
         )}
       </body>
     </html>

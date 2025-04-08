@@ -6,21 +6,50 @@ import { useRouter } from 'next/navigation';
 export const FormLogIn = () => {
     const [isSupervisor, setIsSupervisor] = useState(false);
     const [isShiftView, setIsShiftView] = useState(false);
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [emailError, setEmailError] = useState('');
+    const [passwordError, setPasswordError] = useState('');
     const router = useRouter();
+
+    const handleSignIn = () => {
+        let hasError = false;
+
+        if (!email) {
+            setEmailError("Email cannot be empty!");
+            hasError = true;
+        } else {
+            setEmailError('');
+        }
+
+        if (!password) {
+            setPasswordError("Password cannot be empty!");
+            hasError = true;
+        } else {
+            setPasswordError('');
+        }
+
+        if (hasError) return;
+
+        router.push('/Home');
+    };
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen">
             <div className="flex flex-col items-center space-y-4 w-[600px] p-8 bg-white rounded-lg border border-solid border-[#d9d9d9] shadow-lg">
                 <div className="flex flex-col items-start gap-2 w-full">
-                    <div className="self-stretch relative font-body-base font-medium text-[#1e1e1e] text-base tracking-normal leading-normal">
-                        Username:
-                    </div>
-
+                    <label className="self-stretch relative font-body-base font-medium text-[#1e1e1e] text-base tracking-normal leading-normal">
+                        Email:
+                    </label>
                     <input 
+                        name="email"
                         type="text" 
-                        placeholder="Enter your username" 
+                        placeholder="Enter your email" 
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
                         className="flex items-center px-5 py-4 w-full bg-white rounded-lg border border-solid border-[#d9d9d9] text-black"
                     />
+                    {emailError && <span className="text-red-500 text-sm">{emailError}</span>}
                 </div>
 
                 <div className="flex flex-col items-start gap-2 w-full">
@@ -31,16 +60,11 @@ export const FormLogIn = () => {
                     <input 
                         type="password" 
                         placeholder="Enter your password" 
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
                         className="flex items-center px-5 py-4 w-full bg-white rounded-lg border border-solid border-[#d9d9d9] text-black"
                     />
-                </div>
-
-                <div className="flex flex-col items-start gap-2.5 w-full">
-                    <button className="w-full py-3 text-lg bg-[#2c2c2c] text-white rounded-md hover:bg-black transition duration-300"
-                    onClick={() => router.push('/Home')}
-                    >
-                        Sign In
-                    </button>
+                    {passwordError && <span className="text-red-500 text-sm">{passwordError}</span>}
                 </div>
 
                 <div className="flex flex-col w-full space-y-2">
@@ -79,13 +103,29 @@ export const FormLogIn = () => {
                         </button>
                     </div>
                 </div>
-
                 <a 
                     href="/forgot-password"
                     className="self-stretch h-22 flex items-end w-full text-[#1e1e1e] hover:underline"
                 >
                     Forgot password?
-                </a>    
+                </a>
+                <div className="flex flex-col items-center gap-2.5 w-full">
+                    <div className="flex items-center gap-4">
+                        <button 
+                            className="w-300 p-3 text-lg bg-gray-300 text-black rounded-full hover:bg-gray-400 transition duration-300"
+                            onClick={() => router.push('/')}
+                        >
+                            Back
+                        </button>
+                        <button 
+                            className="w-300 p-3 text-lg bg-[#2c2c2c] text-white rounded-full hover:bg-black transition duration-300"
+                            onClick={handleSignIn}
+                        >
+                            Sign In
+                        </button>
+                    </div>
+                </div>
+    
             </div>
         </div>
     );

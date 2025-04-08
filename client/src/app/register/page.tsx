@@ -2,7 +2,7 @@
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
-import { toast } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { auth, db } from '../../../lib/firebase';
 import { doc, setDoc } from 'firebase/firestore';
@@ -47,10 +47,16 @@ const register = () => {
                 supervisor: isSupervisor,
             });
 
-           toast.success('User registered successfully!'); 
-        } catch (err) {
-            console.error(err);
-            setErrors({ email: 'Email already in use' });
+        } catch (err: any) {
+            console.error('Error during registration:', err);
+
+            if (err.code === 'auth/email-already-in-use') {
+                setErrors({ email: 'Email already in use' });
+            } else if (err.code === 'auth/weak-password') {
+                setErrors({ password: 'Password is too weak' });
+            } else {
+                setErrors({ general: 'An unexpected error occurred. Please try again.' });
+            }
         }
     };
 
@@ -164,12 +170,22 @@ const register = () => {
                 </div>
 
                 <div className="flex flex-col items-center gap-2.5">
-                    <button
-                        type="submit"
-                        className="w-300 p-3 text-lg bg-[#2c2c2c] text-white rounded-md hover:bg-black transition duration-300"
-                    >
-                        Add User
-                    </button>
+                    <div className="flex items-center gap-4">
+                        <button
+                            type="button"
+                            onClick={() => router.push('/')}
+                            className="w-300 p-3 text-lg bg-gray-300 text-black rounded-full hover:bg-gray-400 transition duration-300"
+                        >
+                            Back
+                        </button>
+                        <button
+                            type="submit"
+                            className="w-300 p-3 text-lg bg-[#2c2c2c] text-white rounded-full hover:bg-black transition duration-300"
+                        >
+                            Add User
+                        </button>
+                    </div>
+                    {errors.general && <span className="text-red-500 text-sm">{errors.general}</span>}
                 </div>
             </form>
         </div>
