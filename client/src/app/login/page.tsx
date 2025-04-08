@@ -1,9 +1,11 @@
 'use client'
 import React, { useState } from "react";
-import Image from "next/image";
 import { useRouter } from 'next/navigation';
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../../../lib/firebase";
+import { auth, db } from "../../../lib/firebase";
+import { useDispatch } from "react-redux";
+import { setUser } from "../(state)/authSlice";
+import { doc, getDoc } from "@firebase/firestore";
 
 export const FormLogIn = () => {
     const [isSupervisor, setIsSupervisor] = useState(false);
@@ -12,11 +14,12 @@ export const FormLogIn = () => {
     const [password, setPassword] = useState('');
     const [emailError, setEmailError] = useState('');
     const [passwordError, setPasswordError] = useState('');
-    const router = useRouter();
-
     const [loading, setLoading] = useState(false);
 
-    const handleSignIn = async (e) => {
+    const router = useRouter();
+    const dispatch = useDispatch();
+
+    const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setLoading(true);
         let hasError = false;
@@ -42,8 +45,21 @@ export const FormLogIn = () => {
 
         try {
             
-            await signInWithEmailAndPassword(auth, email, password);
+            const verifyLogin = await signInWithEmailAndPassword(auth, email, password);
+            const user = verifyLogin.user;
+            const userDoc = await getDoc(doc(db, 'employees', user.uid));
+            if (userDoc.exists()) {
+                const userData = userDoc.data();
+                dispatch(setUser({
+                    uid: user.uid,
+                    email: user.email,
+                    isSupervisor: userData.supervisor,
+                    displayName: user.displayName,
+                }));
 
+            }
+
+            router.push('/Home');
         } catch (err) {
             console.log(err);
         }
@@ -51,12 +67,11 @@ export const FormLogIn = () => {
             setLoading(false);
         }
 
-        router.push('/Home');
     };
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen">
-            <div className="flex flex-col items-center space-y-4 w-[600px] p-8 bg-white rounded-lg border border-solid border-[#d9d9d9] shadow-lg">
+            <form onSubmit={handleSignIn} className="flex flex-col items-center space-y-4 w-[600px] p-8 bg-white rounded-lg border border-solid border-[#d9d9d9] shadow-lg">
                 <div className="flex flex-col items-start gap-2 w-full">
                     <label className="self-stretch relative font-body-base font-medium text-[#1e1e1e] text-base tracking-normal leading-normal">
                         Email:
@@ -142,9 +157,9 @@ export const FormLogIn = () => {
                         >
                             Back
                         </button>
-                        <button 
+                        <button
+                            type="submit" 
                             className={`w-300 p-3 text-lg bg-[#2c2c2c] text-white rounded-full hover:bg-black transition duration-300 ${loading ? 'opacity-50' : ''}`}
-                            onClick={handleSignIn}
                             disabled={loading}
                         >
                             Sign In
@@ -152,7 +167,7 @@ export const FormLogIn = () => {
                     </div>
                 </div>
     
-            </div>
+            </form>
         </div>
     );
 };

@@ -1,5 +1,5 @@
 'use client';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
@@ -14,10 +14,10 @@ const register = () => {
 
     const [loading, setLoading] = useState(false);
 
-    const handleRegister = async (e) => {
+    const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setLoading(true);
-        const formData = new FormData(e.target);
+        const formData = new FormData(e.target as HTMLFormElement);
         const requiredFields = ['firstName', 'lastName', 'email', 'password'];
         const newErrors: Record<string, string> = {};
 
@@ -40,6 +40,7 @@ const register = () => {
 
         try {
             const res = await createUserWithEmailAndPassword(auth, email, password);
+            await updateProfile(res.user, { displayName: firstName });
 
             await setDoc(doc(db, 'employees', res.user.uid), {
                 employee_id: res.user.uid,
