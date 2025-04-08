@@ -2,7 +2,10 @@
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
-import { auth } from '../../../lib/firebase';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { auth, db } from '../../../lib/firebase';
+import { doc, setDoc } from 'firebase/firestore';
 
 const register = () => {
     const [isSupervisor, setIsSupervisor] = useState(false);
@@ -33,6 +36,18 @@ const register = () => {
 
         try {
             const res = await createUserWithEmailAndPassword(auth, email, password);
+
+            await setDoc(doc(db, 'employees', res.user.uid), {
+                employee_id: res.user.uid,
+                first_name: firstName,
+                last_name: lastName,
+                email,
+                phone,
+                hour_limit: hourlyLimit,
+                supervisor: isSupervisor,
+            });
+
+           toast.success('User registered successfully!'); 
         } catch (err) {
             console.error(err);
             setErrors({ email: 'Email already in use' });
