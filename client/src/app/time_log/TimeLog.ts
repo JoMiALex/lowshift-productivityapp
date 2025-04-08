@@ -1,5 +1,5 @@
 export interface TimeLogEntry {
-  id?: string;
+  id: string;
   start: Date;
   end: Date;
   hours: number;
