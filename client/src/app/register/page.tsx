@@ -12,8 +12,11 @@ const register = () => {
     const [errors, setErrors] = useState<Record<string, string>>({});
     const router = useRouter();
 
+    const [loading, setLoading] = useState(false);
+
     const handleRegister = async (e) => {
         e.preventDefault();
+        setLoading(true);
         const formData = new FormData(e.target);
         const requiredFields = ['firstName', 'lastName', 'email', 'password'];
         const newErrors: Record<string, string> = {};
@@ -26,6 +29,7 @@ const register = () => {
 
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors);
+            setLoading(false);
             return;
         }
 
@@ -46,6 +50,7 @@ const register = () => {
                 hour_limit: hourlyLimit,
                 supervisor: isSupervisor,
             });
+            toast.success('Registration successful!');
 
         } catch (err: any) {
             console.error('Error during registration:', err);
@@ -58,10 +63,14 @@ const register = () => {
                 setErrors({ general: 'An unexpected error occurred. Please try again.' });
             }
         }
+        finally {
+            setLoading(false);
+        }
     };
 
     return (
         <div className="flex items-center justify-center min-h-screen">
+            <ToastContainer />
             <form
                 className="flex flex-col items-center space-y-4 w-[800px] p-8 bg-white rounded-lg border border-solid border-[#d9d9d9] shadow-lg"
                 onSubmit={handleRegister}
@@ -77,7 +86,8 @@ const register = () => {
                         name="firstName"
                         type="text"
                         placeholder="First Name"
-                        className="flex items-center px-5 py-4 w-full bg-white rounded-lg border border-solid border-[#d9d9d9] text-black"
+                        className={`flex items-center px-5 py-4 w-full bg-white rounded-lg border border-solid border-[#d9d9d9] text-black ${loading ? 'opacity-50' : ''}`}
+                        disabled={loading}
                     />
                     {errors.firstName && <span className="text-red-500 text-sm">{errors.firstName}</span>}
                 </div>
@@ -91,7 +101,8 @@ const register = () => {
                         name="lastName"
                         type="text"
                         placeholder="Last Name"
-                        className="flex items-center px-5 py-4 w-full bg-white rounded-lg border border-solid border-[#d9d9d9] text-black"
+                        className={`flex items-center px-5 py-4 w-full bg-white rounded-lg border border-solid border-[#d9d9d9] text-black ${loading ? 'opacity-50' : ''}`}
+                        disabled={loading}
                     />
                     {errors.lastName && <span className="text-red-500 text-sm">{errors.lastName}</span>}
                 </div>
@@ -105,7 +116,8 @@ const register = () => {
                         name="phone"
                         type="text"
                         placeholder="Phone"
-                        className="flex items-center px-5 py-4 w-full bg-white rounded-lg border border-solid border-[#d9d9d9] text-black"
+                        className={`flex items-center px-5 py-4 w-full bg-white rounded-lg border border-solid border-[#d9d9d9] text-black ${loading ? 'opacity-50' : ''}`}
+                        disabled={loading}
                     />
                 </div>
 
@@ -118,7 +130,8 @@ const register = () => {
                         name="email"
                         type="text"
                         placeholder="Email"
-                        className="flex items-center px-5 py-4 w-full bg-white rounded-lg border border-solid border-[#d9d9d9] text-black"
+                        className={`flex items-center px-5 py-4 w-full bg-white rounded-lg border border-solid border-[#d9d9d9] text-black ${loading ? 'opacity-50' : ''}`}
+                        disabled={loading}
                     />
                     {errors.email && <span className="text-red-500 text-sm">{errors.email}</span>}
                 </div>
@@ -132,7 +145,8 @@ const register = () => {
                         name="password"
                         type="password"
                         placeholder="Password"
-                        className="flex items-center px-5 py-4 w-full bg-white rounded-lg border border-solid border-[#d9d9d9] text-black"
+                        className={`flex items-center px-5 py-4 w-full bg-white rounded-lg border border-solid border-[#d9d9d9] text-black ${loading ? 'opacity-50' : ''}`}
+                        disabled={loading}
                     />
                     {errors.password && <span className="text-red-500 text-sm">{errors.password}</span>}
                 </div>
@@ -146,7 +160,8 @@ const register = () => {
                         name="hourlyLimit"
                         type="number"
                         placeholder="Hourly Limit"
-                        className="flex items-center px-5 py-4 w-full bg-white rounded-lg border border-solid border-[#d9d9d9] text-black"
+                        className={`flex items-center px-5 py-4 w-full bg-white rounded-lg border border-solid border-[#d9d9d9] text-black ${loading ? 'opacity-50' : ''}`}
+                        disabled={loading}
                     />
                 </div>
 
@@ -174,13 +189,15 @@ const register = () => {
                         <button
                             type="button"
                             onClick={() => router.push('/')}
-                            className="w-300 p-3 text-lg bg-gray-300 text-black rounded-full hover:bg-gray-400 transition duration-300"
+                            className={`w-300 p-3 text-lg bg-gray-300 text-black rounded-full hover:bg-gray-400 transition duration-300 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            disabled={loading}
                         >
                             Back
                         </button>
                         <button
                             type="submit"
-                            className="w-300 p-3 text-lg bg-[#2c2c2c] text-white rounded-full hover:bg-black transition duration-300"
+                            className={`w-300 p-3 text-lg bg-[#2c2c2c] text-white rounded-full hover:bg-black transition duration-300 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            disabled={loading}
                         >
                             Add User
                         </button>
