@@ -2,16 +2,24 @@
 
 import React, { useState } from 'react'
 import { Menu, X } from 'lucide-react'
-import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { clearUser } from '@/app/(state)/authSlice';
+import { useDispatch } from 'react-redux';
 
 const Navbar = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const router = useRouter();
+  const dispatch = useDispatch();
 
   const handleNavigation = (path: string) => {
     setIsModalOpen(false); // Close modal after navigation
     router.push(path);
+  };
+
+  const handleLogout = () => {
+    dispatch(clearUser());
+    router.push('/');
+    console.log("Logout clicked");
   };
   
   return (
@@ -42,10 +50,10 @@ const Navbar = () => {
             >
               <div className="w-7 h-7 bg-white rounded-full"></div>
             </button>
-            Logout
+              Logout
             <button 
               className="flex items-center gap-2 px-3 py-3 bg-black rounded-full hover:bg-gray-700"
-              onClick={() => handleNavigation('/')}
+              onClick={handleLogout}
             >
               <X className="w-4 h-4"/>
             </button>

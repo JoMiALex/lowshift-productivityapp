@@ -3,235 +3,246 @@
 import React, { useEffect, useState } from 'react';
 import './tcStyle.css';
 import { db } from './../../../lib/firebase';
-import { doc, setDoc, getDoc, updateDoc, collection, addDoc, Timestamp } from "firebase/firestore";
+import { doc, setDoc, getDoc, updateDoc, Timestamp } from "firebase/firestore";
+
+type Shift = {
+  start: Timestamp;
+  end: Timestamp | null;
+  breakstart: Timestamp | null;
+  breakend: Timestamp | null;
+  pay_code: string;
+  hours: number | null;
+};
+
+type ClockingSession = {
+  id: string;
+  employee_id: string;
+  date: string;
+  shift: Shift[];
+};
 
 const TimeClock: React.FC = () => {
-    const [time, setTime] = useState(new Date());
-    const [session, setSession] = useState<any>(null);
+    const [isClient, setIsClient] = useState(false);
+    const [time, setTime] = useState<Date | null>(null);
+    const [session, setSession] = useState<ClockingSession | null>(null);
+    const [currentState, setCurrentState] = useState<'idle' | 'clockedIn' | 'onBreak'>('idle');
+    const [payCode, setPayCode] = useState<string>("regular");
 
     useEffect(() => {
-        const timer = setInterval(() => {
-            setTime(new Date());
-        }, 1000);
-
+        setIsClient(true);
+        setTime(new Date());
+        const timer = setInterval(() => setTime(new Date()), 1000);
         return () => clearInterval(timer);
     }, []);
 
-    const formatTime = (date: Date) => {
-        const hours = date.getHours().toString().padStart(2, '0');
-        const minutes = date.getMinutes().toString().padStart(2, '0');
-        const seconds = date.getSeconds().toString().padStart(2, '0');
-        return { hours, minutes, seconds };
+    const formatTime = () => {
+        if (!isClient || !time) return { hours: '00', minutes: '00', seconds: '00', dateString: '' };
+        return {
+            hours: time.getHours().toString().padStart(2, '0'),
+            minutes: time.getMinutes().toString().padStart(2, '0'),
+            seconds: time.getSeconds().toString().padStart(2, '0'),
+            dateString: time.toLocaleDateString('en-US', {
+                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+            })
+        };
     };
 
-    const { hours, minutes, seconds } = formatTime(time);
+    const { hours, minutes, seconds, dateString } = formatTime();
 
-    // Fetch the session data for the day
     const fetchSession = async () => {
-        const userId = "sampleUser1256"; // Replace with actual user ID
-        const today = new Date().toISOString().split("T")[0];
-        const ref = doc(db, "timeclock", `${userId}_${today}`);
+        const employee_id = "12";  // Use employee_id directly
+        const ref = doc(db, "clocking", employee_id); // Use employee_id as the document ID
+
         const docSnap = await getDoc(ref);
+
         if (docSnap.exists()) {
-            setSession(docSnap.data());
+            const data = docSnap.data() as ClockingSession;
+            setSession(data);
+
+            const lastShift = data.shift[data.shift.length - 1];
+            if (lastShift?.end === null) {
+                setCurrentState(lastShift.breakstart === null ? 'clockedIn' : 'onBreak');
+            } else {
+                setCurrentState('idle');
+            }
         } else {
-            setSession(null); // No session found for today
+            setSession({
+                id: employee_id,  // Using employee_id directly as ID
+                employee_id,
+                date: new Date().toISOString().split("T")[0], // Store the date as a field
+                shift: []
+            });
+            setCurrentState('idle');
         }
     };
 
-    useEffect(() => {
-        fetchSession();
-    }, []);
+    useEffect(() => { if (isClient) fetchSession(); }, [isClient]);
 
-    // Clock In for a new shift
+    const calculateHours = (start: Timestamp, end: Timestamp): number => {
+        return parseFloat(((end.seconds - start.seconds) / 3600).toFixed(2));
+    };
+
     const handleClockIn = async () => {
-        const userId = "sampleUser1256"; // Replace with actual user ID
-        const today = new Date().toISOString().split("T")[0];
+        const employee_id = "12";  // Use employee_id directly
+        const ref = doc(db, "clocking", employee_id); // Use employee_id as the document ID
 
-        const ref = doc(db, "timeclock", `${userId}_${today}`);
-        const shiftsRef = collection(ref, "shifts");
-
-        const shiftData = {
-            clockIn: Timestamp.now(),
-            clockOut: null,
-            breakStart: null,
-            breakEnd: null,
-            totalBreakTime: 0,
-            totalWorkTime: 0,
+        const newShift: Shift = {
+            start: Timestamp.now(),
+            end: null,
+            breakstart: null,
+            breakend: null,
+            pay_code: payCode,
+            hours: null
         };
 
-        // Create a new shift document
-        const newShiftRef = await addDoc(shiftsRef, shiftData);
+        await setDoc(ref, {
+            employee_id,
+            date: new Date().toISOString().split("T")[0], // Store the date as a field
+            shift: [...(session?.shift || []), newShift]
+        }, { merge: true });
 
-        // Update session state with new shift reference
-        setSession((prevSession: any) => ({
-            ...prevSession,
-            shifts: [...(prevSession?.shifts || []), newShiftRef.id],
-        }));
-
-        alert("Clocked in!");
+        setCurrentState('clockedIn');
+        fetchSession();
     };
 
-    // Clock Out (for the last shift)
     const handleClockOut = async () => {
-        if (!session || !session.shifts || session.shifts.length === 0) {
-            alert("Please clock in first!");
-            return;
+        if (!session || session.shift.length === 0) return;
+
+        const employee_id = "12";  // Use employee_id directly
+        const ref = doc(db, "clocking", employee_id); // Use employee_id as the document ID
+
+        const updatedShifts = [...session.shift];
+        const lastShift = updatedShifts[updatedShifts.length - 1];
+
+        if (lastShift.end !== null) return;
+
+        const endTime = Timestamp.now();
+        let totalBreakSeconds = 0;
+
+        if (lastShift.breakstart && lastShift.breakend) {
+            totalBreakSeconds = lastShift.breakend.seconds - lastShift.breakstart.seconds;
         }
 
-        const userId = "sampleUser1256"; // Replace with actual user ID
-        const today = new Date().toISOString().split("T")[0];
-        const ref = doc(db, "timeclock", `${userId}_${today}`);
-        const shiftsRef = collection(ref, "shifts");
+        const workSeconds = endTime.seconds - lastShift.start.seconds - totalBreakSeconds;
+        const workHours = parseFloat((workSeconds / 3600).toFixed(2));
 
-        const lastShiftId = session.shifts[session.shifts.length - 1];
-        const lastShiftRef = doc(shiftsRef, lastShiftId);
-        const lastShiftSnap = await getDoc(lastShiftRef);
+        lastShift.end = endTime;
+        lastShift.hours = workHours;
 
-        if (lastShiftSnap.exists()) {
-            const shiftData = lastShiftSnap.data();
+        await updateDoc(ref, {
+            shift: updatedShifts
+        });
 
-            if (shiftData.clockOut) {
-                alert("You are already clocked out!");
-                return;
-            }
-
-            // Calculate total work time
-            const workDuration = Math.floor((Timestamp.now().seconds - shiftData.clockIn.seconds - shiftData.totalBreakTime * 60) / 60);
-
-            // Update the shift document with clock-out time and work duration
-            await updateDoc(lastShiftRef, {
-                clockOut: Timestamp.now(),
-                totalWorkTime: workDuration,
-            });
-
-            setSession((prevSession: any) => {
-                return { ...prevSession, shifts: prevSession.shifts.slice(0, -1) }; // Remove the last shift (clocked out)
-            });
-
-            alert("Clocked out!");
-        }
+        setCurrentState('idle');
+        fetchSession();
     };
 
-    // Start Break for the last shift
     const handleStartBreak = async () => {
-        if (!session || !session.shifts || session.shifts.length === 0) {
-            alert("Please clock in first!");
-            return;
-        }
+        if (!session || currentState !== 'clockedIn') return;
 
-        const userId = "sampleUser1256"; // Replace with actual user ID
-        const today = new Date().toISOString().split("T")[0];
-        const ref = doc(db, "timeclock", `${userId}_${today}`);
-        const shiftsRef = collection(ref, "shifts");
+        const employee_id = "12";  // Use employee_id directly
+        const ref = doc(db, "clocking", employee_id); // Use employee_id as the document ID
 
-        const lastShiftId = session.shifts[session.shifts.length - 1];
-        const lastShiftRef = doc(shiftsRef, lastShiftId);
-        const lastShiftSnap = await getDoc(lastShiftRef);
+        const updatedShifts = [...session.shift];
+        const lastShift = updatedShifts[updatedShifts.length - 1];
 
-        if (lastShiftSnap.exists()) {
-            const shiftData = lastShiftSnap.data();
+        lastShift.breakstart = Timestamp.now();
+        lastShift.breakend = null;
 
-            if (shiftData.clockOut) {
-                alert("You have already clocked out! Cannot start a break.");
-                return;
-            }
+        await updateDoc(ref, {
+            shift: updatedShifts
+        });
 
-            if (shiftData.breakStart) {
-                alert("You are already on break!");
-                return;
-            }
-
-            // Start the break and update the shift document
-            await updateDoc(lastShiftRef, {
-                breakStart: Timestamp.now(),
-            });
-
-            setSession((prevSession: any) => {
-                return { ...prevSession, shifts: prevSession.shifts }; // No change in shifts, just updating break time
-            });
-
-            alert("Break started!");
-        }
+        setCurrentState('onBreak');
+        fetchSession();
     };
 
-    // End Break for the last shift
     const handleEndBreak = async () => {
-        if (!session || !session.shifts || session.shifts.length === 0) {
-            alert("Please clock in first!");
-            return;
-        }
+        if (!session || currentState !== 'onBreak') return;
 
-        const userId = "sampleUser1256"; // Replace with actual user ID
-        const today = new Date().toISOString().split("T")[0];
-        const ref = doc(db, "timeclock", `${userId}_${today}`);
-        const shiftsRef = collection(ref, "shifts");
+        const employee_id = "12";  // Use employee_id directly
+        const ref = doc(db, "clocking", employee_id); // Use employee_id as the document ID
 
-        const lastShiftId = session.shifts[session.shifts.length - 1];
-        const lastShiftRef = doc(shiftsRef, lastShiftId);
-        const lastShiftSnap = await getDoc(lastShiftRef);
+        const updatedShifts = [...session.shift];
+        const lastShift = updatedShifts[updatedShifts.length - 1];
 
-        if (lastShiftSnap.exists()) {
-            const shiftData = lastShiftSnap.data();
+        if (!lastShift.breakstart) return;
 
-            if (shiftData.clockOut) {
-                alert("You have already clocked out! Cannot end a break.");
-                return;
-            }
+        lastShift.breakend = Timestamp.now();
 
-            if (!shiftData.breakStart) {
-                alert("You are not on break!");
-                return;
-            }
+        await updateDoc(ref, {
+            shift: updatedShifts
+        });
 
-            // End the break and calculate break time
-            const breakDuration = Math.floor((Timestamp.now().seconds - shiftData.breakStart.seconds) / 60);
-
-            // Update break time and break end
-            await updateDoc(lastShiftRef, {
-                breakEnd: Timestamp.now(),
-                totalBreakTime: shiftData.totalBreakTime + breakDuration,
-            });
-
-            setSession((prevSession: any) => {
-                return { ...prevSession, shifts: prevSession.shifts }; // No change in shifts, just updating break time
-            });
-
-            alert("Break ended!");
-        }
+        setCurrentState('clockedIn');
+        fetchSession();
     };
 
     return (
         <div className="clock-container">
             <div className="timeSettings">
                 <div className="clock">
-                    <div id="Date">{time.toDateString()}</div>
-                    <ul>
-                        <li id="hr">{hours}</li>
-                        <li id="point">:</li>
-                        <li id="min">{minutes}</li>
-                        <li id="point">:</li>
-                        <li id="sec">{seconds}</li>
-                    </ul>
+                    {isClient ? (
+                        <>
+                            <div id="Date">{dateString}</div>
+                            <ul>
+                                <li id="hr">{hours}</li>
+                                <li>:</li>
+                                <li id="min">{minutes}</li>
+                                <li>:</li>
+                                <li id="sec">{seconds}</li>
+                            </ul>
+                        </>
+                    ) : (
+                        <div className="clock-loading">Loading time...</div>
+                    )}
                 </div>
             </div>
+
             <div className="button-container">
                 <div className="top-buttons">
-                    <button className="clock-button" id="clockIn" onClick={handleClockIn}>
+                    <button 
+                        className="clock-button" 
+                        id="clockIn" 
+                        onClick={handleClockIn}
+                        disabled={currentState !== 'idle'}
+                    >
                         <i className="fa-solid fa-clock"></i> Clock In
                     </button>
-                    <button className="clock-button" id="clockOut" onClick={handleClockOut}>
+                    <button 
+                        className="clock-button" 
+                        id="clockOut" 
+                        onClick={handleClockOut}
+                        disabled={currentState === 'idle'}
+                    >
                         <i className="fa-solid fa-right-from-bracket"></i> Clock Out
                     </button>
                 </div>
                 <div className="bottom-buttons">
-                    <button className="clock-button" id="break" onClick={handleStartBreak}>
+                    <button 
+                        className="clock-button" 
+                        id="break" 
+                        onClick={handleStartBreak}
+                        disabled={currentState !== 'clockedIn'}
+                    >
                         <i className="fa-solid fa-coffee"></i> Start Break
                     </button>
-                    <button className="clock-button" id="endBreak" onClick={handleEndBreak}>
+                    <button 
+                        className="clock-button" 
+                        id="endBreak" 
+                        onClick={handleEndBreak}
+                        disabled={currentState !== 'onBreak'}
+                    >
                         <i className="fa-solid fa-right-to-bracket"></i> End Break
                     </button>
                 </div>
+            </div>
+
+            <div className="status-indicator">
+                Current Status: <span className={`status-${currentState}`}>
+                    {currentState === 'idle' ? 'Not Clocked In' : 
+                     currentState === 'clockedIn' ? 'On Shift' : 'On Break'}
+                </span>
             </div>
         </div>
     );
