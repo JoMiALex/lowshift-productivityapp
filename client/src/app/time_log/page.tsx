@@ -1,6 +1,47 @@
 'use client'
 import React, { useState, useEffect } from 'react';
-import { TimeLogEntry } from './TimeLog'; // Adjust path as needed
+import { TimeLogEntry } from './TimeLog'; 
+
+const mockTimeLogEntries: TimeLogEntry[] = [
+    {
+        id: "1",
+        start: new Date("2025-04-11T07:00:00"),
+        end: new Date("2025-04-11T13:00:00"),
+        hours: 4,
+        pay_code: "Overtime",
+        comments: "Testing",
+        employ_id: 101
+    },
+    {
+        id: "2",
+        start: new Date("2025-04-11T15:00:00"),
+        end: new Date("2025-04-11T19:00:00"),
+        hours: 4,
+        pay_code: "Overtime",
+        comments: "Extension",
+        employ_id: 101
+    },
+    {
+        id: "3",
+        start: new Date("2025-04-11T08:00:00"),
+        end: new Date("2025-04-11T16:00:00"),
+        hours: 8,
+        pay_code: "Overtime",
+        comments: "New Guy",
+        employ_id: 111
+    },
+    {
+        id: "4",
+        start: new Date("2025-04-10T12:00:00"),
+        end: new Date("2025-04-10T16:00:00"),
+        hours: 4,
+        pay_code: "Overtime",
+        comments: "ID is 111",
+        employ_id: 111
+    },
+];
+
+const mockPayCodes = ["Regular", "Overtime", "Holiday", "Sick"];
 
 const TimeLog = () => {
     const [currentStartDate, setCurrentStartDate] = useState(new Date());
@@ -38,23 +79,33 @@ const TimeLog = () => {
         setCurrentStartDate(weekDates.start);
         setShowCalendar(false);
     };
-//try using only one date (start) as a parameter to connect to hours
+
     const fetchTimeLogEntries = async (start: Date, end: Date): Promise<TimeLogEntry[]> => {
         try {
-        const params = new URLSearchParams({
-            startDate: start.toISOString(),
-            endDate: end.toISOString()
+        //mock data tests
+        const filteredEntries = mockTimeLogEntries.filter(entry => {
+            const entryDate = new Date(entry.start);
+            return entryDate >= start && entryDate <=end
+            && entry.employ_id === 111;
         });
+
+        console.log('All employ_id values:', filteredEntries.map(entry => entry.employ_id));
+        return filteredEntries;
+        //firebase data
+        // const params = new URLSearchParams({
+        //     startDate: start.toISOString(),
+        //     endDate: end.toISOString()
+        // });
       
-        const response = await fetch(`/time_log/api?${params.toString()}`);
+        // const response = await fetch(`/time_log/api?${params.toString()}`);
       
-        if (!response.ok) {
-            console.error('Response status:', response.status);
-        }
+        // if (!response.ok) {
+        //     console.error('Response status:', response.status);
+        // }
       
-        const data: TimeLogEntry[] = await response.json();
-        console.log('Fetched entries with IDs:', data.map(entry => entry.id))
-        return data;
+        // const data: TimeLogEntry[] = await response.json();
+        // console.log('Fetched entries with IDs:', data.map(entry => entry.id))
+        // return data;
         } catch (error) {
         console.error('Error fetching time logs:', error);
         return [];
@@ -63,18 +114,20 @@ const TimeLog = () => {
 
     const fetchPayCodes = async () => {
         try {
-          const response = await fetch('/time_log/api?type=payCodes');
+            //mock data tests
+            setPayCodes(mockPayCodes);
+            //firebase data
+            // const response = await fetch('/time_log/api?type=payCodes');
+            // if (!response.ok) {
+            //     throw new Error('Failed to fetch pay codes');
+            // }
           
-          if (!response.ok) {
-            throw new Error('Failed to fetch pay codes');
-          }
-          
-          const codes = await response.json();
-          setPayCodes(codes);
-        } catch (error) {
-          console.error('Error fetching pay codes:', error);
-        }
-      };
+            // const codes = await response.json();
+            // setPayCodes(codes);
+            } catch (error) {
+            console.error('Error fetching pay codes:', error);
+            }
+    };
 
     useEffect(() => {
         const loadTimeLogEntries = async () => {
