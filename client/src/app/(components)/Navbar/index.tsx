@@ -124,7 +124,7 @@ const Navbar = () => {
                   onClick={() => handleNavigation('/register')}
                   className="hover:text-gray-300"
                 >
-                  Time Log
+                  Add User
                 </button>
               </li>
             </ul>

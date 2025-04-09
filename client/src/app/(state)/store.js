@@ -11,4 +11,9 @@ export const store = configureStore({
 });
 
 export default store;
-//export type RootState = ReturnType<typeof store.getState>;
+
+//The following code can be used for reffernece when getting user id from the redux state
+// import { useSelector } from "react-redux";
+
+// const user = useSelector((state: any) => state.auth.user);
+// const userid = user.uid;
