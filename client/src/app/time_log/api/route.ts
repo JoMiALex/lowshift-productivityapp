@@ -65,6 +65,7 @@ export async function GET(request: NextRequest) {
             const data = doc.data();
             entries.push({
                 id: doc.id,
+                employ_id:  data.employ_id || 0,
                 start: data.start.toDate(),
                 end: data.end.toDate(),
                 hours: data.hours || 0,
