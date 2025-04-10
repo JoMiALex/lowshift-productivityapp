@@ -5,10 +5,10 @@ import {
     where,
     getDocs,
     Timestamp,
-    db,
     QueryDocumentSnapshot,
     DocumentData
-} from '../../../../lib/firebase';
+} from 'firebase/firestore';
+import {  db } from '../../../../lib/firebase';
 import { TimeLogEntry } from "../TimeLog";
 
 export async function GET(request: NextRequest) {
