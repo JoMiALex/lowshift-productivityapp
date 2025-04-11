@@ -4,6 +4,12 @@ import ScheduleView from "@/app/schedule/ScheduleView"
 //import { getFirestore } from 'firebase/firestore'
 
 export default function SchedulePage() {
+
+    // For changing the current week
+    const handleWeekChange = (newDate: Date) => {
+        //console.log("Week changed to:"), newDate)
+    }
+
     // Placeholder shifts...
     const scheduleData: WeekSchedule = {
         startDate: new Date("2025-02-12"),
