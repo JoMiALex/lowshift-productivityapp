@@ -1,10 +1,37 @@
 import type { WeekSchedule } from "@/app/schedule/schedule"
+import React, { useState, useRef, useEffect } from "react"
+import { ChevronLeft, ChevronRight, Calendar } from "lucide-react"
 
 interface ScheduleViewProps {
   schedule: WeekSchedule
+  initialDate?: Date
+  onWeekChange?: (newDate: Date) => void
 }
 
-export default function ScheduleView({ schedule }: ScheduleViewProps) {
+export default function ScheduleView({ schedule, initialDate = new Date(), onWeekChange, ...props  }: ScheduleViewProps) {
+  
+  // States for current date and calendar
+  const [currentDate, setCurrentDate] = useState<Date>(initialDate)
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false)
+  const [calendarMonth, setCalendarMonth] = useState<Date>(new Date(currentDate))
+
+  // Handling outside clicks for dropdown
+  const dropdownRef = useRef<HTMLDivElement>(null)
+
+  // Close dropdown on outside clicks
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsCalendarOpen(false)
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [])
+
   const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
   return (

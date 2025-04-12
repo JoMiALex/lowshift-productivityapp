@@ -1,4 +1,4 @@
-//import { addWeeks, subWeeks, startOfWeek, endOfWeek, format } from "date-fns"
+
 
 // Type definitions
 export interface Shift {
@@ -18,49 +18,81 @@ export interface WeekSchedule {
     days: ScheduleDay[]
 }
 
+  // Date formatting
+export function formatDate(date: Date, format: string): string {
+    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+    const fullMonthNames = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ]
+    
+    const day = date.getDate()
+    const month = date.getMonth()
+    const year = date.getFullYear()
+  
+    return format
+      .replace("MMM", monthNames[month])
+      .replace("MMMM", fullMonthNames[month])
+      .replace("yyyy", year.toString())
+      .replace("d", day.toString())
+  }
+
 // Week functions
+
+// Get start of week (Monday)
+export function getStartOfWeek(date: Date): Date {
+    const result = new Date(date)
+    const day = result.getDay()
+    const diff = day === 0 ? 6 : day - 1 // Adjust for Monday start
+    result.setDate(result.getDate() - diff)
+    result.setHours(0, 0, 0, 0)
+    return result
+  }
+
+  // Get end of week (Sunday)
+export function getEndOfWeek(date: Date): Date {
+    const result = new Date(date)
+    const day = result.getDay()
+    const diff = day === 0 ? 0 : 7 - day // Adjust for Sunday end (0 = Sunday)
+    result.setDate(result.getDate() + diff)
+    result.setHours(23, 59, 59, 999)
+    return result
+  }
+
 export function getWeekRange(date: Date) {
-    const start = startOfWeek(date, { weekStartsOn: 1 }) // Week starts on Monday
-    const end = endOfWeek(date, { weekStartsOn: 1 })
+    const start = getStartOfWeek(date)
+    const end = getEndOfWeek(date)
     return {
         start,
         end,
-        formatted: `${format(start, "MMM d")} - ${format(end, "MMM d, yyyy")}`,
-    }
+        formatted: `${formatDate(start, "MMM d")} - ${formatDate(end, "MMM d, yyyy")}`,
+  }
 }
 
 export function getNextWeek(currentDate: Date): Date {
-    return addWeeks(currentDate, 1)
+    const result = new Date(currentDate)
+    result.setDate(result.getDate() + 7)
+    return result
 }
+  
 
 export function getPreviousWeek(currentDate: Date): Date {
-    return subWeeks(currentDate, 1)
+    const result = new Date(currentDate)
+    result.setDate(result.getDate() - 7)
+    return result
 }
 
 export function getWeeksInRange(startDate: Date, weeksCount: number) {
     const weeks = []
-
-    // Past weeks
-    for (let i = weeksCount; i > 0; i--) {
-        const weekDate = subWeeks(startDate, i)
-        weeks.push({
-            date: weekDate,
-            label: getWeekRange(weekDate).formatted,
-        })
-    }
-
-    // Current week
-    weeks.push({
-        date: startDate,
-        label: getWeekRange(startDate).formatted,
-    })
-
-    // Future weeks
-    for (let i = 1; i <= weeksCount; i++) {
-        const weekDate = addWeeks(startDate, i)
-        weeks.push ({
-            date: weekDate,
-            label: getWeekRange(weekDate).formatted,
-        })
-    }
+    // Add
 }
