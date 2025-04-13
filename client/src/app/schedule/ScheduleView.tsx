@@ -74,6 +74,54 @@ export default function ScheduleView({ schedule, initialDate = new Date(), onWee
     return date >= interval.start && date <= interval.end
   }
 
+ // Get week number
+ const getWeekNumber = (date: Date): number => {
+    const target = new Date(date)
+    const dayNr = (date.getDay() + 6) % 7
+    target.setDate(target.getDate() - dayNr + 3)
+    const firstThursday = target.valueOf()
+    target.setMonth(0, 1)
+    if (target.getDay() !== 4) {
+      target.setMonth(0, 1 + ((4 - target.getDay() + 7) % 7))
+    }
+    return 1 + Math.ceil((firstThursday - target.valueOf()) / 604800000)
+ }
+
+ // Get current week range
+ const currentWeekRange = getWeekRange(currentDate)
+
+ // Handle week navigation
+
+ const handleNextWeek = () => {
+  const newDate = getNextWeek(currentDate)
+  setCurrentDate(newDate)
+  if (onWeekChange) onWeekChange(newDate)
+}
+
+ const handlePreviousWeek = () => {
+    const newDate = getPreviousWeek(currentDate)
+    setCurrentDate(newDate)
+    if (onWeekChange) onWeekChange(newDate)
+  }
+
+  const handleSelectDate = (date: Date) => {
+    const weekStart = getStartOfWeek(date)
+    setIsCalendarOpen(false)
+    if (onWeekChange) onWeekChange(weekStart)
+  }
+
+  const handleNextMonth = () => {
+    const newMonth = new Date(calendarMonth)
+    newMonth.setMonth(newMonth.getMonth() + 1)
+    setCalendarMonth(newMonth)
+  }
+
+  const handlePreviousMonth = () => {
+    const newMonth = new Date(calendarMonth)
+    newMonth.setMonth(newMonth.getMonth() - 1)
+    setCalendarMonth(newMonth)
+  }
+
   const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
   return (
