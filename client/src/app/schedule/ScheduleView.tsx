@@ -50,6 +50,30 @@ export default function ScheduleView({ schedule, initialDate = new Date(), onWee
     return result
   }
 
+  // Get days for complete calendar view
+  const getCalendarDays = (date: Date): Date[] => {
+    const result = []
+    const firstDay = getStartOfMonth(date)
+    const startDay = getEndOfWeek(firstDay)
+    const endDay = getEndOfWeek(getEndOfMonth(date))
+
+    for (let d = new Date(startDay); d <= endDay; d.setDate(d.getDate() + 1)) {
+      result.push(new Date(d))
+    }
+
+    return result
+  }
+
+  // Check if date is in current month
+  const isSameMonth = (date1: Date, date2: Date): boolean => {
+    return date1.getMonth() === date2.getMonth() && date1.getFullYear() === date2.getFullYear()
+  }
+
+  // Check if date is within interval
+  const isWithinInterval = (date: Date, interval: { start: Date; end: Date }): boolean => {
+    return date >= interval.start && date <= interval.end
+  }
+
   const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
   return (
