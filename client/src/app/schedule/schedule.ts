@@ -59,7 +59,7 @@ export function getStartOfWeek(date: Date): Date {
     return result
   }
 
-  // Get end of week (Sunday)
+// Get end of week (Sunday)
 export function getEndOfWeek(date: Date): Date {
     const result = new Date(date)
     const day = result.getDay()
@@ -69,6 +69,7 @@ export function getEndOfWeek(date: Date): Date {
     return result
   }
 
+// Get week range
 export function getWeekRange(date: Date) {
     const start = getStartOfWeek(date)
     const end = getEndOfWeek(date)
@@ -79,20 +80,48 @@ export function getWeekRange(date: Date) {
   }
 }
 
+// Get next week
 export function getNextWeek(currentDate: Date): Date {
     const result = new Date(currentDate)
     result.setDate(result.getDate() + 7)
     return result
 }
   
-
+// Get previous week
 export function getPreviousWeek(currentDate: Date): Date {
     const result = new Date(currentDate)
     result.setDate(result.getDate() - 7)
     return result
 }
 
+// Get weeks in range
 export function getWeeksInRange(startDate: Date, weeksCount: number) {
     const weeks = []
-    // Add
+    
+    // Generate past weeks
+    for (let i = weeksCount; i > 0; i--) {
+      const weekDate = new Date(startDate)
+      weekDate.setDate(weekDate.getDate() - i * 7)
+      weeks.push({
+        date: weekDate,
+        label: getWeekRange(weekDate).formatted,
+      })
+    }
+
+    // Add current week
+    weeks.push({
+      date: startDate,
+      label: getWeekRange(startDate).formatted,
+    })
+
+    // Generate future weeks
+    for (let i = 1; i <= weeksCount; i++) {
+      const weekDate = new Date(startDate)
+      weekDate.setDate(weekDate.getDate() + i * 7)
+      weeks.push({
+        date: weekDate,
+        label: getWeekRange(weekDate).formatted,
+      })
+    }
+    return weeks
 }
