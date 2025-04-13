@@ -122,7 +122,16 @@ export default function ScheduleView({ schedule, initialDate = new Date(), onWee
     setCalendarMonth(newMonth)
   }
 
+  // Calendar days
+  const calendarDaysComplete = getCalendarDays(calendarMonth)
+
+  // Current selected week range
+  const selectedWeekStart = getStartOfWeek(currentDate)
+  const selectedWeekEnd = getEndOfWeek(currentDate)
+  const selectedWeekRange = { start: selectedWeekStart, end: selectedWeekEnd }
+
   const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+  const daysOfWeekShort = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 
   return (
     <div className="bg-white rounded-lg shadow-md p-4">
