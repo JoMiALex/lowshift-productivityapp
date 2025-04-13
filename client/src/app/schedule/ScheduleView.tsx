@@ -139,6 +139,7 @@ export default function ScheduleView({ schedule, initialDate = new Date(), onWee
         {/* Week Navigation Controls */}
         <div className="flex items-center justify-center mb-4 pt-4">
           <div className="flex items-center space-x-2">
+            {/* Previous Week Button */}
             <button
               type="button"
               onClick={handlePreviousWeek}
@@ -164,6 +165,38 @@ export default function ScheduleView({ schedule, initialDate = new Date(), onWee
                 <div className="absolute top-full left-0 mt-1 w-[300px] bg-white rounded-md shadow-lg z-10 border">
                   <div className="p-3">
                     {/* Month Navigation */}
+                    <div className="flex items-center justify-between mb-2">
+                      <button
+                        type="button"
+                        onClick={handlePreviousMonth}
+                        className="inline-flex items-center justify-center rounded-md text-sm font-medium h-9 w-9 hover:bg-accent hover:text-accent-foreground"
+                      >
+                        <ChevronLeft className="h-4 w-4" />
+                      </button>
+                      <div className="font-medium">{formatDate(calendarMonth, "MMMM yyyy")}
+                        <button
+                          type="button"
+                          onClick={handleNextMonth}
+                          className="inline-flex items-center justify-center rounded-md text-sm font-medium h-9 w-9 hover:bg-accent hover:text-accent-foreground"
+                        >
+                          <ChevronRight className="h-4 w-4" />
+                        </button>
+                      </div>
+
+                      {/* Calendar grid */}
+                      <div className="grid grid-cols-8 gap-1 mt-2">
+                        {/* Week number header */}
+                        <div className="text-center text-xs text-gray-500 h-8 flex items-center justify-center">Wk</div>
+
+                        {/* Days of week headers */}
+                        {daysOfWeekShort.map((day) => (
+                          <div
+                            key={day}
+                            className="text-center text-xs text-gray-500 h-8 flex items-center justify-center"
+                          >
+                            {day}
+                          </div>
+                        ))}
               </div>
               )}
             </div>
