@@ -134,28 +134,43 @@ export default function ScheduleView({ schedule, initialDate = new Date(), onWee
   const daysOfWeekShort = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-4">
-      <div className="grid grid-cols-1 md:grid-cols-7 gap-4">
-        {daysOfWeek.map((day, index) => (
-          <div key={day} className="bg-white rounded-lg shadow-md overflow-hidden">
-            <div className="bg-gray-100 px-4 py-2 border-b">
-              <h3 className="font-semibold text-lg text-black">{day}</h3>
-            </div>
-            <div className="p-4">
-              {schedule.days[index]?.shifts.map((shift) => (
-                <div key={shift.id} className="mb-2 p-2 bg-gray-50 rounded border">
-                  <p className="font-semibold text-black">{shift.employeeName}</p>
-                  <p className="text-sm text-gray-600">
-                    {shift.start.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} -{" "}
-                    {shift.end.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-                  </p>
-                </div>
-              ))}
+    <div className="schedule-container">
+      <div className="bg-white rounded-lg shadow-md">
+        {/* Week Navigation Controls */}
+        <div className="flex items-center justify-center mb-4 pt-4">
+          <div className="flex items-center space-x-2">
+            <button
+              type="button"
+              onClick={handlePreviousWeek}
+              aria-label="Previous Week"
+              className="inline-flex items-center justify-center rounded-md text-sm font-medium h-9 w-9 border border-input bg-background hover:bg-accent hover:text-accent-foreground"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </button>
+
+            {/* Dropdown */}
+            <div className="relative" ref={dropdownRef}>
+              <button
+                type="button"
+                className="inline-flex items-center justify-center rounded-md text-sm font-medium h-9 px-4 py-2 min-w-[180px] border border-input bg-background hover:bg-accent hover:text-accent-foreground"
+                aria-label="Select Week"
+                onClick={() => setIsCalendarOpen(!isCalendarOpen)}
+              >
+                {currentWeekRange.formatted}
+                <Calendar className="h-4 w-4 ml-2 opacity-50" />
+              </button>
+
+              {isCalendarOpen && (
+                <div className="absolute top-full left-0 mt-1 w-[300px] bg-white rounded-md shadow-lg z-10 border">
+                  <div className="p-3">
+                    {/* Month Navigation */}
+              </div>
+              )}
             </div>
           </div>
-        ))}
+        </div>
+
       </div>
     </div>
   )
 }
-
