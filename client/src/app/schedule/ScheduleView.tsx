@@ -197,8 +197,48 @@ export default function ScheduleView({ schedule, initialDate = new Date(), onWee
                             {day}
                           </div>
                         ))}
+
+                        {/* Calendar days with week numbers*/}
+                        {Array.from({ length: Math.ceil(calendarDaysComplete.length / 7) }).map((_, weekIndex) => {
+                          const weekDays = calendarDaysComplete.slice(weekIndex * 7, weekIndex * 7 + 7)
+                          const weekNumber = getWeekNumber(weekDays[0])
+
+                          return (
+                            <React.Fragment key={`week-${weekIndex}`}>
+                              {/* Week number */}
+                              <div className="text-center text-xs text-gray-500 h-8 flex items-center justify-center">
+                                {weekNumber}
+                              </div>
+
+                              {/* Days */}
+                              {weekDays.map((day) => {
+                                const isCurrentMonth = isSameMonth(day, calendarMonth)
+                                const isSelected = isWithinInterval(day, selectedWeekRange)
+
+                                return (
+                                  <button
+                                    key={day.toString()}
+                                    type="button"
+                                    onClick={() => handleSelectDate(day)}
+                                    className={`
+                                      h-8 w-8 rounded-md flex items-center justify-center text-sm
+                                      ${!isCurrentMonth ? "text-gray-300" : "text-gray-900"}
+                                      ${isSelected ? "bg-blue-500 text-white" : ""}
+                                      hover:bg-gray-100
+                                    `}
+                                  >
+                                    {day.getDate()}
+                                  </button>
+                                )
+                              })}
+                            </React.Fragment>
+                          )
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
-              )}
             </div>
           </div>
         </div>
