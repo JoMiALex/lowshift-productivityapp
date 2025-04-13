@@ -1,6 +1,7 @@
 import type { WeekSchedule } from "@/app/schedule/schedule"
 import React, { useState, useRef, useEffect } from "react"
 import { ChevronLeft, ChevronRight, Calendar } from "lucide-react"
+import { formatDate, getWeekRange, getNextWeek, getPreviousWeek, getStartOfWeek, getEndOfWeek } from "./schedule"
 
 interface ScheduleViewProps {
   schedule: WeekSchedule
@@ -15,7 +16,7 @@ export default function ScheduleView({ schedule, initialDate = new Date(), onWee
   const [isCalendarOpen, setIsCalendarOpen] = useState(false)
   const [calendarMonth, setCalendarMonth] = useState<Date>(new Date(currentDate))
 
-  // Handling outside clicks for dropdown
+  // Reference to handle outside clicks for dropdown
   const dropdownRef = useRef<HTMLDivElement>(null)
 
   // Close dropdown on outside clicks
@@ -31,6 +32,23 @@ export default function ScheduleView({ schedule, initialDate = new Date(), onWee
       document.removeEventListener("mousedown", handleClickOutside)
     }
   }, [])
+
+  // Get start of month
+  const getStartOfMonth = (date: Date) => {
+    const result = new Date(date)
+    result.setDate(1)
+    result.setHours(0, 0, 0, 0)
+    return result
+  }
+
+  // Get end of month
+  const getEndOfMonth = (date: Date) => {
+    const result = new Date(date)
+    result.setMonth(result.getMonth() + 1)
+    result.setDate(0)
+    result.setHours(23, 59, 59, 999)
+    return result
+  }
 
   const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
