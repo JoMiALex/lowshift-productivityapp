@@ -1,6 +1,9 @@
 'use client'
 import React, { useState, useEffect } from 'react';
 import { TimeLogEntry } from './TimeLog'; 
+import { useSelector } from 'react-redux';
+import { auth } from '../../../lib/firebase';
+import { useRouter } from 'next/navigation';
 
 // import {useSelector} from "react-redux";
 
@@ -49,12 +52,16 @@ import { TimeLogEntry } from './TimeLog';
 // const mockPayCodes = ["Regular", "Overtime", "Holiday", "Sick"];
 
 const TimeLog = () => {
+    const router = useRouter();
     const [currentStartDate, setCurrentStartDate] = useState(new Date());
     const [currentCalendarDate, setCurrentCalendarDate] = useState(new Date());
     const [showCalendar, setShowCalendar] = useState(false);
     const [entries, setEntries] = useState<TimeLogEntry[]>([]);
     const [loading, setLoading] = useState(false);
     const [payCodes, setPayCodes] = useState<string[]>([]);
+    const [error, setError] = useState<string | null>(null);
+    const user = useSelector((state: any) => state.auth.user);
+    console.log('Current user from Redux:', user);
 
     const getWeekDates = (date: Date) => {
         const currentDay = date.getDay();
@@ -98,24 +105,40 @@ const TimeLog = () => {
         // return filteredEntries;
 
         //firebase data
-        const params = new URLSearchParams({
-            startDate: start.toISOString(),
-            endDate: end.toISOString()
-            // employ_id: '654' 
-        });
-      
-        const response = await fetch(`/time_log/api?${params.toString()}`);
+            if (!user?.uid) {
+            console.error('No user logged in');
+            return [];
+            }
+
+            console.log('Fetching time logs for user:', user.uid);
+            const params = new URLSearchParams({
+                startDate: start.toISOString(),
+                endDate: end.toISOString(),
+                employ_id: user.uid  
+            });
+
+            console.log('API Request URL:', `/time_log/api?${params.toString()}`);
+            const response = await fetch(`/time_log/api?${params.toString()}`);
       
         if (!response.ok) {
-            console.error('Response status:', response.status);
+            const errorData = await response.json();
+            console.error('API Error Response:', {
+                status: response.status,
+                data: errorData 
+            });
+
+            if (errorData.indexUrl) {
+                console.error('Firebase index required. Please create index at:', errorData.indexUrl);
+            }
+            return [];
         }
       
-        const data: TimeLogEntry[] = await response.json();
-        console.log('Fetched entries with IDs:', data.map(entry => entry.id))
-        return data;
+            const data: TimeLogEntry[] = await response.json();
+            console.log('Successfully fetched entries:', data.length);
+            return data;
         } catch (error) {
-        console.error('Error fetching time logs:', error);
-        return [];
+            console.error('Error fetching time logs:', error);
+            return [];
         }
     };
 
@@ -132,13 +155,18 @@ const TimeLog = () => {
           
             const codes = await response.json();
             setPayCodes(codes);
-            } catch (error) {
+        } catch (error) {
             console.error('Error fetching pay codes:', error);
             }
     };
 
     useEffect(() => {
         const loadTimeLogEntries = async () => {
+            if (!user?.uid) {
+                console.log('No user logged in, skipping time log fetch');
+                return;
+            }
+            
             setLoading(true);
             const weekDates = getWeekDates(currentStartDate);
             const data = await fetchTimeLogEntries(weekDates.start, weekDates.end);   

@@ -6,7 +6,8 @@ import {
     getDocs,
     Timestamp,
     QueryDocumentSnapshot,
-    DocumentData
+    DocumentData,
+    orderBy
 } from 'firebase/firestore';
 import {  db } from '../../../../lib/firebase';
 import { TimeLogEntry } from "../TimeLog";
@@ -15,6 +16,11 @@ export async function GET(request: NextRequest) {
     try {
         const searchParams = request.nextUrl.searchParams;
         const type = searchParams.get('type');
+        const employ_id = searchParams.get('employ_id');
+        const startDate = searchParams.get('startDate');
+        const endDate = searchParams.get('endDate');
+
+        console.log('API Request params:', { type, employ_id, startDate, endDate });
 
         if(type === 'payCodes') {
             //fetching paycodes
@@ -37,49 +43,78 @@ export async function GET(request: NextRequest) {
             return NextResponse.json(Array.from(payCodes));
         }
 
-        //fetching time logs
-        const startDate = searchParams.get('startDate');
-        const endDate = searchParams.get('endDate');
-
-        if (!startDate || !endDate) {
+        if (!employ_id) {
+            console.error('Missing employ_id parameter');
             return NextResponse.json(
-                { message: 'startDate and endDate parameters are required' },
+                { message: 'employ_id parameter is required'},
                 { status: 400 }
             );
         }
+ 
+        const start = startDate ? new Date(startDate) : new Date(0);
+        const end = endDate ? new Date(endDate) : new Date();
 
-        const start = new Date(startDate);
-        const end = new Date(endDate);
-
-        const clockingRef = collection(db, 'clocking');
-        const q = query(
-            clockingRef,
-            where('start', '>=', Timestamp.fromDate(start)),
-            where('start', '<=', Timestamp.fromDate(end))
-        );
-
-        const querySnapshot = await getDocs(q);
-        const entries: TimeLogEntry[] = [];
-
-        querySnapshot.forEach((doc: QueryDocumentSnapshot<DocumentData>) => {
-            const data = doc.data();
-            entries.push({
-                id: doc.id,
-                employ_id:  data.employ_id || 0,
-                start: data.start.toDate(),
-                end: data.end.toDate(),
-                hours: data.hours || 0,
-                pay_code: data.pay_code || 'Regular',
-                comments: data.comments || ''
-            });
+        console.log('Query parameters:', {
+            employ_id,
+            start: start.toISOString(),
+            end: end.toISOString()
         });
 
+        
+
+        const clockingRef = collection(db, 'clocking');
+        try {
+            const q = query(
+                clockingRef,
+                where('employ_id', '==', employ_id)
+            );
+
+            console.log('Executing Firestoe query...');
+            const querySnapshot = await getDocs(q);
+            console.log('Query completed, found documents:', querySnapshot.size);
+
+            const entries: TimeLogEntry[] = [];
+
+            querySnapshot.forEach((doc: QueryDocumentSnapshot<DocumentData>) => {
+                const data = doc.data();
+                const entryStart = data.start.toDate();
+                
+                if (entryStart >= start && entryStart <= end) {
+                    entries.push({
+                        id: doc.id,
+                        employ_id:  data.employ_id,
+                        start: entryStart,
+                        end: data.end.toDate(),
+                        hours: data.hours || 0,
+                        pay_code: data.pay_code || 'Regular',
+                        comments: data.comments || ''
+                    });
+                }
+            });
+
+        entries.sort((a, b) => a.start.getTime() - b.start.getTime());
+
+        console.log('Returning filtered and sorted entries:', entries.length);
         return NextResponse.json(entries);
-    } catch (error) {
-        console.error('Error in time-logs API:', error);
+    } catch (error: any) {
+        console.error('Firestore query error:', error);
         return NextResponse.json(
-            { message: 'Internal server error' },
-            { status: 500}
+            {
+                message: 'Error fetching time logs',
+                error: error.message
+            },
+            { status: 500 }
+        );
+    }
+    } catch (error: any) {
+        console.error('Error in time-logs API', error);
+        return NextResponse.json(
+            {
+                message: 'Internal server error',
+                error: error.message
+            },
+            { status: 500 }
         );
     }
 }
+       
