@@ -166,7 +166,7 @@ const TimeLog = () => {
                 console.log('No user logged in, skipping time log fetch');
                 return;
             }
-            
+
             setLoading(true);
             const weekDates = getWeekDates(currentStartDate);
             const data = await fetchTimeLogEntries(weekDates.start, weekDates.end);   
@@ -176,7 +176,7 @@ const TimeLog = () => {
         
         loadTimeLogEntries();
         fetchPayCodes();
-    }, [currentStartDate]); // This will reload data whenever the week changes
+    }, [currentStartDate, user]); // This will reload data whenever the week changes
 
     const renderCalendar = () => {
         const today = new Date();
