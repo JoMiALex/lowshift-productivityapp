@@ -237,8 +237,8 @@ export default function ScheduleView({ schedule, initialDate = new Date(), onWee
                       </div>
                     </div>
                   </div>
+                </div>
                 )}
-              </div>
             </div>
           </div>
         </div>
