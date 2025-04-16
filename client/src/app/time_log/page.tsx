@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from 'react';
 import { TimeLogEntry } from './TimeLog'; 
 import { useSelector } from 'react-redux';
-import { auth } from '../../../lib/firebase';
 import { useRouter } from 'next/navigation';
 
 // import {useSelector} from "react-redux";
