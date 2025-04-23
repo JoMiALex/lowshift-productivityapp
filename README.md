@@ -4,6 +4,7 @@ This is a work productivity application used for shift managment, hourly clockin
 ## Team Members
 John Michael Lott (Project Lead)<br>
 Ian Gabriel Vista
+
 Kevin Byon
 
 
