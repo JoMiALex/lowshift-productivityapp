@@ -3,11 +3,18 @@ import { collection, query, where, getDocs, Timestamp } from "firebase/firestore
 
 // Type definition
 export interface Shift {
-  employ_id: string;
-  end: Timestamp;
-  hours: number;
-  pay_code: string;
-  start: Timestamp;
+  id: string
+  employeeName: string
+  start: Timestamp | Date
+  end: Timestamp | Date
+}
+
+export interface Clocking {
+  employ_id: string
+  end: Timestamp
+  hours: number
+  pay_code: string
+  start: Timestamp
 }
 
 // Fetch shifts from Firebase
@@ -21,15 +28,16 @@ export async function fetchShiftsForWeek(startDate: Date, endDate: Date): Promis
 
   const querySnapshot = await getDocs(q);
   const shifts: Shift[] = [];
+
   const employeeNames = await fetchEmployeeNames();
 
   querySnapshot.forEach((doc) => {
-    const data = doc.data() as Shift;
+    const data = doc.data() as Clocking;
     shifts.push({
       id: doc.id,
       employeeName: employeeNames[data.employ_id] || "Unknown Employee",
-      start: data.start.toDate(),
-      end: data.end.toDate()
+      start: data.start,
+      end: data.end
     });
   });
 
