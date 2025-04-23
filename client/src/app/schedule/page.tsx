@@ -1,7 +1,7 @@
+'use client'
 import type { WeekSchedule } from "@/app/schedule/schedule"
 import ScheduleView from "@/app/schedule/ScheduleView"
-//import { initializeApp } from 'firebase/app'
-//import { getFirestore } from 'firebase/firestore'
+import { useEffect, useState } from "react"
 
 export default function SchedulePage() {
 

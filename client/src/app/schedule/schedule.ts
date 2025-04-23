@@ -1,21 +1,64 @@
+import { db } from './../../../lib/firebase';
+import { collection, query, where, getDocs, Timestamp } from "firebase/firestore";
 
-
-// Type definitions
+// Type definition
 export interface Shift {
-    id: string
-    employeeName: string
-    start: Date
-    end: Date
+  employ_id: string;
+  end: Timestamp;
+  hours: number;
+  pay_code: string;
+  start: Timestamp;
 }
 
+// Fetch shifts from Firebase
+export async function fetchShiftsForWeek(startDate: Date, endDate: Date): Promise<Shift[]> {
+  const shiftsRef = collection(db, 'clocking');
+  const q = query(
+    shiftsRef,
+    where("start", ">=", Timestamp.fromDate(startDate)),
+    where("start", "<=", Timestamp.fromDate(endDate))
+  );
+
+  const querySnapshot = await getDocs(q);
+  const shifts: Shift[] = [];
+  const employeeNames = await fetchEmployeeNames();
+
+  querySnapshot.forEach((doc) => {
+    const data = doc.data() as Shift;
+    shifts.push({
+      id: doc.id,
+      employeeName: employeeNames[data.employ_id] || "Unknown Employee",
+      start: data.start.toDate(),
+      end: data.end.toDate()
+    });
+  });
+
+  return shifts;
+}
+
+// Fetch employee names for mapping
+async function fetchEmployeeNames(): Promise<Record<string, string>> {
+  const employeesRef = collection(db, 'employees');
+  const querySnapshot = await getDocs(employeesRef);
+  const names: Record<string, string> = {};
+
+  querySnapshot.forEach((doc) => {
+    const data = doc.data();
+    names[doc.id] = `${data.first_name} ${data.last_name}`;
+  });
+
+  return names;
+}
+
+
 export interface ScheduleDay {
-    date: Date
-    shifts: Shift[]
+  date: Date
+  shifts: Shift[]
 }
 
 export interface WeekSchedule {
-    startDate: Date
-    days: ScheduleDay[]
+  startDate: Date
+  days: ScheduleDay[]
 }
 
   // Date formatting
