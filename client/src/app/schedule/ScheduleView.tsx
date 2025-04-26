@@ -7,6 +7,7 @@ interface ScheduleViewProps {
   schedule: WeekSchedule
   initialDate?: Date
   onWeekChange?: (newDate: Date) => void
+  isLoading?: boolean
 }
 
 export default function ScheduleView({ schedule, initialDate = new Date(), onWeekChange, ...props  }: ScheduleViewProps) {
