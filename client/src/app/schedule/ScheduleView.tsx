@@ -108,6 +108,7 @@ export default function ScheduleView({ schedule, initialDate = new Date(), onWee
 
   const handleSelectDate = (date: Date) => {
     const weekStart = getStartOfWeek(date)
+    setCurrentDate(weekStart);
     setIsCalendarOpen(false)
     if (onWeekChange) onWeekChange(weekStart)
   }
@@ -138,10 +139,6 @@ export default function ScheduleView({ schedule, initialDate = new Date(), onWee
   const calendarDaysComplete = getCalendarDays(calendarMonth)
 
   // Current selected week range
-  const selectedWeekStart = getStartOfWeek(currentDate)
-  const selectedWeekEnd = getEndOfWeek(currentDate)
-  const selectedWeekRange = { start: selectedWeekStart, end: selectedWeekEnd }
-
   const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
   const daysOfWeekShort = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 
@@ -181,11 +178,11 @@ export default function ScheduleView({ schedule, initialDate = new Date(), onWee
                       <button
                         type="button"
                         onClick={handlePreviousMonth}
-                        className="inline-flex items-center justify-center rounded-md text-sm font-medium h-9 w-9 hover:bg-accent hover:text-accent-foreground"
+                        className="text-black inline-flex items-center justify-center rounded-md text-sm font-medium h-9 w-9 hover:bg-accent hover:text-accent-foreground"
                       >
                         <ChevronLeft className="h-4 w-4" />
                       </button>
-                      <div className="font-medium">{formatDate(calendarMonth, "MMMM yyyy")}
+                      <div className="font-medium text-black">{formatDate(calendarMonth, "MMMM yyyy")}
                         <button
                           type="button"
                           onClick={handleNextMonth}
@@ -225,7 +222,10 @@ export default function ScheduleView({ schedule, initialDate = new Date(), onWee
                               {/* Days */}
                               {weekDays.map((day) => {
                                 const isCurrentMonth = isSameMonth(day, calendarMonth)
-                                const isSelected = isWithinInterval(day, selectedWeekRange)
+                                const isSelected = isWithinInterval(day, {
+                                  start: currentDate, // Changed from selectedWeekStart
+                                  end: getEndOfWeek(currentDate) // Changed from selectedWeekEnd
+                                });
 
                                 return (
                                   <button
