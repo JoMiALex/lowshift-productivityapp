@@ -2,6 +2,7 @@ import type { WeekSchedule } from "@/app/schedule/schedule"
 import React, { useState, useRef, useEffect } from "react"
 import { ChevronLeft, ChevronRight, Calendar } from "lucide-react"
 import { formatDate, getWeekRange, getNextWeek, getPreviousWeek, getStartOfWeek, getEndOfWeek } from "./schedule"
+import { Timestamp } from "firebase/firestore";
 
 interface ScheduleViewProps {
   schedule: WeekSchedule
@@ -121,6 +122,16 @@ export default function ScheduleView({ schedule, initialDate = new Date(), onWee
     const newMonth = new Date(calendarMonth)
     newMonth.setMonth(newMonth.getMonth() - 1)
     setCalendarMonth(newMonth)
+  }
+
+  // Helper function to format shift times
+  function formatShiftTime(time: Date | Timestamp): string {
+    const date = time instanceof Timestamp ? time.toDate() : time;
+    return date.toLocaleTimeString([], {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    }).replace(/^0/, '');
   }
 
   // Calendar days
@@ -265,8 +276,7 @@ export default function ScheduleView({ schedule, initialDate = new Date(), onWee
                   <div key={shift.id} className="mb-2 p-2 bg-white rounded border">
                     <p className="font-semibold text-black">{shift.employeeName}</p>
                     <p className="text-sm text-gray-600">
-                      {new Date(shift.start).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} -
-                      {new Date(shift.end).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                      {formatShiftTime(shift.start)} - {formatShiftTime(shift.end)}
                     </p>
                   </div>
                 ))}
