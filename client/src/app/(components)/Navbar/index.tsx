@@ -6,6 +6,20 @@ import { useRouter } from 'next/navigation'
 import { clearUser } from '@/app/(state)/authSlice';
 import { useDispatch } from 'react-redux';
 
+interface CustomCSSProperties extends React.CSSProperties {
+  '--bg-color'?: string;
+  '--second-bg-color'?: string;
+  '--text-color'?: string;
+  '--main-color'?: string;
+}
+
+const rootStyles: CustomCSSProperties = {
+  '--bg-color': '#AF8A49',
+  '--second-bg-color': '#006044',
+  '--text-color': '#ffffff',
+  '--main-color': '#117935f8',
+};
+
 const Navbar = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const router = useRouter();
@@ -28,7 +42,7 @@ const Navbar = () => {
         {/* LEFT SIDE */}
         <div className="flex justify-between items-center gap-5">
             <button 
-              className="px-3 py-3 bg-black rounded-full hover:bg-gray-700"
+              className="px-3 py-3 rounded-full bg-[#FFFFFF] hover:bg-[#E5E7EB]"         
               onClick={() => setIsModalOpen(!isModalOpen)}
             >
               <Menu className="w-4 h-4"/>
@@ -43,16 +57,20 @@ const Navbar = () => {
 
         {/* RIGHT SIDE */}
         <div className="flex justify-between items-center gap-5 pr-5">
-            Profile
             <button 
               className="flex items-center gap-2 rounded-full hover:bg-gray-700"
               onClick={() => handleNavigation('/profile')}
             >
-              <div className="w-7 h-7 bg-white rounded-full"></div>
+              {/* Temporary Picture */}
+              <img 
+                src="/images/profile.png"
+                alt="Profile"
+                className="w-7 h-7 rounded-full object-cover"
+              />
             </button>
               Logout
             <button 
-              className="flex items-center gap-2 px-3 py-3 bg-black rounded-full hover:bg-gray-700"
+              className="flex items-center gap-2 px-2 py-2 bg-[#FFFFFF] rounded-full hover:bg-[#E5E7EB]"
               onClick={handleLogout}
             >
               <X className="w-4 h-4"/>
@@ -63,13 +81,13 @@ const Navbar = () => {
     {/* Modal */}
     <div 
       className={
-        `fixed top-0 left-0 h-screen w-64 bg-gray-600 transform transition-transform duration-300 ease-in-out 
+        `fixed top-0 left-0 h-screen w-64 bg-[#E5E7EB] transform transition-transform duration-300 ease-in-out 
         ${ isModalOpen ? 'translate-x-0' : '-translate-x-full' } z-50`
         }
     >
       <div className="p-6">
         <button 
-          className="absolute top-3 right-3 px-3 py-3 rounded-full hover:bg-gray-800"
+          className="absolute top-3 right-3 px-3 py-3 rounded-full hover:bg-[#FFFFFF] hover:text-[#006044]"
           onClick={() => setIsModalOpen(false)}
         >
           <Menu className="w-4 h-4"/>
@@ -82,7 +100,7 @@ const Navbar = () => {
               <li>
                 <button 
                   onClick={() => handleNavigation('/Home')}
-                  className="hover:text-gray-300"
+                  className="hover:text-[#006044]"
                 >
                   Home
                 </button>
@@ -90,7 +108,7 @@ const Navbar = () => {
               <li>
                 <button 
                   onClick={() => handleNavigation('/Checklist')}
-                  className="hover:text-gray-300"
+                  className="hover:text-[#006044]"
                 >
                   Shift Page
                 </button>
@@ -98,7 +116,7 @@ const Navbar = () => {
               <li>
                 <button 
                   onClick={() => handleNavigation('/timeclock')}
-                  className="hover:text-gray-300"
+                  className="hover:text-[#006044]"
                 >
                   Clock In/Out
                 </button>
@@ -106,7 +124,7 @@ const Navbar = () => {
               <li>
                 <button 
                   onClick={() => handleNavigation('/schedule')}
-                  className="hover:text-gray-300"
+                  className="hover:text-[#006044]"
                 >
                   Schedule
                 </button>
@@ -114,7 +132,7 @@ const Navbar = () => {
               <li>
                 <button 
                   onClick={() => handleNavigation('/time_log')}
-                  className="hover:text-gray-300"
+                  className="hover:text-[#006044]"
                 >
                   Time Log
                 </button>
@@ -122,7 +140,7 @@ const Navbar = () => {
               <li>
                 <button 
                   onClick={() => handleNavigation('/register')}
-                  className="hover:text-gray-300"
+                  className="hover:text-[#006044]"
                 >
                   Add User
                 </button>
