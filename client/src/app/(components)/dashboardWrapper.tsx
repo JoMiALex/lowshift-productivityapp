@@ -1,5 +1,5 @@
 import React from 'react'
-import Navbar from '.'
+import Navbar from './Navbar'
 
 const DashboardWrapper = ({ children} : {children: React.ReactNode}) => {
   return (
