@@ -2,7 +2,7 @@
 
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import DashboardWrapper from "./dashboardWrapper";
+import DashboardWrapper from "./(components)/Navbar/dashboardWrapper";
 import { usePathname } from "next/navigation";
 import { Provider } from 'react-redux';
 import { store } from './(state)/store';

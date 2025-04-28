@@ -1,57 +1,59 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/firebase'; // adjust path if needed
-import {
-    collection,
-    query,
-    where,
-    getDocs,
-    addDoc,
-    deleteDoc,
-    doc,
-} from 'firebase/firestore';
+import { db } from '@/../lib/firebase';
+import { collection, getDocs, doc, updateDoc, query, addDoc, deleteDoc } from 'firebase/firestore';
+
+const TASKS_COLLECTION = 'tasks'; // Shared collection for all users
 
 export async function GET(req: NextRequest) {
     try {
-        const { searchParams } = req.nextUrl;
-        const uid = searchParams.get('uid');
-        const completed = searchParams.get('completed');
-
-        if (!uid) {
-            return NextResponse.json({ message: 'Missing uid' }, { status: 400 });
-        }
-
-        const checklistRef = collection(db, 'checklists', uid, 'tasks');
-
-        const q = completed !== null
-            ? query(checklistRef, where('completed', '==', completed === 'true'))
-            : query(checklistRef);
-
-        const querySnapshot = await getDocs(q);
-        const tasks = querySnapshot.docs.map(doc => ({
+        const tasksRef = collection(db, TASKS_COLLECTION);
+        const querySnapshot = await getDocs(query(tasksRef));
+        const tasks = querySnapshot.docs.map((doc) => ({
             id: doc.id,
             ...doc.data(),
         }));
 
         return NextResponse.json(tasks);
     } catch (error: any) {
-        console.error('Error fetching checklist:', error);
+        console.error('Error fetching tasks:', error);
         return NextResponse.json(
             { message: 'Error fetching tasks', error: error.message },
-            { status: 500 }
+            { status: 400 }
+        );
+    }
+}
+
+export async function PUT(req: NextRequest) {
+    try {
+        const { id, updates } = await req.json();
+
+        if (!id || typeof updates !== 'object') {
+            return NextResponse.json({ message: 'Invalid payload' }, { status: 400 });
+        }
+
+        const taskRef = doc(db, TASKS_COLLECTION, id);
+        await updateDoc(taskRef, updates);
+
+        return NextResponse.json({ success: true });
+    } catch (error: any) {
+        console.error('Error updating task:', error);
+        return NextResponse.json(
+            { message: 'Error updating task', error: error.message },
+            { status: 400 }
         );
     }
 }
 
 export async function POST(req: NextRequest) {
     try {
-        const { uid, task } = await req.json();
+        const { task } = await req.json();
 
-        if (!uid || !task || typeof task.text !== 'string') {
+        if (!task || typeof task.text !== 'string' || typeof task.completed !== 'boolean') {
             return NextResponse.json({ message: 'Invalid payload' }, { status: 400 });
         }
 
-        const checklistRef = collection(db, 'checklists', uid, 'tasks');
-        const docRef = await addDoc(checklistRef, {
+        const tasksRef = collection(db, TASKS_COLLECTION);
+        const docRef = await addDoc(tasksRef, {
             ...task,
             createdAt: new Date(),
         });
@@ -61,20 +63,20 @@ export async function POST(req: NextRequest) {
         console.error('Error adding task:', error);
         return NextResponse.json(
             { message: 'Error adding task', error: error.message },
-            { status: 500 }
+            { status: 400 }
         );
     }
 }
 
 export async function DELETE(req: NextRequest) {
     try {
-        const { uid, id } = await req.json();
+        const { id } = await req.json();
 
-        if (!uid || !id) {
-            return NextResponse.json({ message: 'Missing uid or id' }, { status: 400 });
+        if (!id) {
+            return NextResponse.json({ message: 'Missing task ID' }, { status: 400 });
         }
 
-        const taskRef = doc(db, 'checklists', uid, 'tasks', id);
+        const taskRef = doc(db, TASKS_COLLECTION, id);
         await deleteDoc(taskRef);
 
         return NextResponse.json({ success: true });
@@ -82,7 +84,7 @@ export async function DELETE(req: NextRequest) {
         console.error('Error deleting task:', error);
         return NextResponse.json(
             { message: 'Error deleting task', error: error.message },
-            { status: 500 }
+            { status: 400 }
         );
     }
 }

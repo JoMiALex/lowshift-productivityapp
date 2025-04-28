@@ -1,51 +1,62 @@
-'use client'
+'use client';
+
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 const Checklist = () => {
-    const [tasks, setTasks] = useState([]);
-    const [taskInput, setTaskInput] = useState('');
+    const [tasks, setTasks] = useState<{ id: string; text: string; completed: boolean }[]>([]);
+    const router = useRouter();
 
     useEffect(() => {
-        const savedTasks = JSON.parse(localStorage.getItem('tasks')) || [];
-        setTasks(savedTasks);
+        // Fetch tasks from the API
+        const fetchTasks = async () => {
+            try {
+                const response = await fetch(`/api/checklist`);
+                const data = await response.json();
+                setTasks(data);
+            } catch (error) {
+                console.error('Error fetching tasks:', error);
+            }
+        };
+
+        fetchTasks();
     }, []);
 
-    useEffect(() => {
-        localStorage.setItem('tasks', JSON.stringify(tasks));
-    }, [tasks]);
-
-    const addTask = () => {
-        if (taskInput.trim() === '') return;
-        setTasks([...tasks, { text: taskInput, completed: false }]);
-        setTaskInput('');
-    };
-
-    const toggleTask = (index) => {
+    const toggleTask = async (index: number) => {
         const updatedTasks = [...tasks];
-        updatedTasks[index].completed = !updatedTasks[index].completed;
+        const task = updatedTasks[index];
+        task.completed = !task.completed;
         setTasks(updatedTasks);
-    };
 
-    const removeTask = (index) => {
-        setTasks(tasks.filter((_, i) => i !== index));
+        // Update the task in the database
+        try {
+            await fetch(`/api/checklist`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    id: task.id,
+                    updates: { completed: task.completed },
+                }),
+            });
+        } catch (error) {
+            console.error('Error updating task:', error);
+        }
     };
 
     return (
         <div className="p-8 max-w-lg mx-auto bg-white shadow-lg rounded-lg">
+            {/* Button to navigate to Task Manager */}
+            <button
+                onClick={() => router.push('/Checklist/TaskManager')}
+                className="absolute top-4 right-4 p-3 bg-blue-500 text-white rounded-full shadow-lg hover:bg-blue-600"
+            >
+                Task Manager
+            </button>
+
             <h2 className="text-xl font-bold mb-4">Daily Checklist</h2>
-            <div className="flex gap-2 mb-4">
-                <input
-                    type="text"
-                    value={taskInput}
-                    onChange={(e) => setTaskInput(e.target.value)}
-                    placeholder="Enter a task..."
-                    className="flex-1 p-2 border rounded"
-                />
-                <button onClick={addTask} className="p-2 bg-blue-500 text-white rounded">Add</button>
-            </div>
             <ul>
                 {tasks.map((task, index) => (
-                    <li key={index} className="flex justify-between items-center p-2 border-b">
+                    <li key={task.id} className="flex justify-between items-center p-2 border-b">
                         <div className="flex items-center gap-2">
                             <input
                                 type="checkbox"
@@ -54,7 +65,6 @@ const Checklist = () => {
                             />
                             <span className={task.completed ? "line-through text-gray-500" : ""}>{task.text}</span>
                         </div>
-                        <button onClick={() => removeTask(index)} className="text-red-500">X</button>
                     </li>
                 ))}
             </ul>
