@@ -3,13 +3,13 @@
 import React, { useEffect, useState } from 'react';
 import './tcStyle.css';
 import { db } from './../../../lib/firebase';
-import { doc, collection, setDoc, getDocs, Timestamp, query, orderBy, limit } from "firebase/firestore";
+import { doc, collection, setDoc, getDocs, Timestamp, query, where, orderBy, limit } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 
 type ClockingSession = {
   id: string;
-  employee_id: string;
-  start: Timestamp | null;
+  employ_id: string;
+  start: Timestamp;
   end: Timestamp | null;
   pay_code: string;
   hours: number | null;
@@ -49,21 +49,32 @@ const TimeClock: React.FC = () => {
   const fetchSession = async () => {
     if (!user) return;
 
-    const employee_id = user.uid;
-    const sessionsRef = collection(db, `clocking/${employee_id}/sessions`);
-    const q = query(sessionsRef, orderBy("start", "desc"), limit(1));
+    const employ_id = user.uid;
+    const clockingRef = collection(db, 'clocking');
+    const q = query(
+      clockingRef,
+      where('employ_id', '==', employ_id),
+      orderBy('start', 'desc'),
+      limit(1)
+    );
+
     const querySnapshot = await getDocs(q);
 
     if (!querySnapshot.empty) {
       const doc = querySnapshot.docs[0];
-      const data = doc.data() as ClockingSession;
-      setSession({ ...data, id: doc.id });
+      const data = doc.data();
 
-      if (data.end === null) {
-        setCurrentState('clockedIn');
-      } else {
-        setCurrentState('idle');
-      }
+      const sessionData: ClockingSession = {
+        id: doc.id,
+        employ_id: data.employ_id || employ_id,
+        start: data.start || Timestamp.now(),
+        end: data.end || null,
+        pay_code: data.pay_code || 'Regular',
+        hours: data.hours || null,
+      };
+
+      setSession(sessionData);
+      setCurrentState(data.end === null ? 'clockedIn' : 'idle');
     } else {
       setSession(null);
       setCurrentState('idle');
@@ -79,68 +90,57 @@ const TimeClock: React.FC = () => {
   const handleClockIn = async () => {
     if (!user) return;
 
-    const employee_id = user.uid;
-    const sessionsRef = collection(db, `clocking/${employee_id}/sessions`);
-    const newSessionRef = doc(sessionsRef);
+    const employ_id = user.uid;
+    const clockingRef = collection(db, 'clocking');
+    const newSessionRef = doc(clockingRef);
 
     const newSession: ClockingSession = {
       id: newSessionRef.id,
-      employee_id,
+      employ_id,
       start: Timestamp.now(),
       end: null,
       pay_code: payCode,
-      hours: null
+      hours: null,
     };
 
-    // Create a new document for the session
     await setDoc(newSessionRef, newSession);
-
     setSession(newSession);
     setCurrentState('clockedIn');
   };
 
   const handleClockOut = async () => {
-    if (!user || !session || session.start === null) return;
+    if (!user || !session || !session.start) return;
 
-    const employee_id = user.uid;
-    const sessionRef = doc(db, `clocking/${employee_id}/sessions`, session.id);
-
+    const sessionRef = doc(db, 'clocking', session.id);
     const endTime = Timestamp.now();
-    const workSeconds = endTime.seconds - session.start.seconds;
-    const workHours = parseFloat((workSeconds / 3600).toFixed(2));
+    const workHours = calculateHours(session.start, endTime);
 
     const updatedSession = {
       ...session,
       end: endTime,
-      hours: workHours
+      hours: workHours,
     };
 
-    // Update the session document
     await setDoc(sessionRef, updatedSession);
-
     setSession(updatedSession);
     setCurrentState('idle');
   };
 
   const handleBreakIn = async () => {
-    if (!user || !session || session.start === null) return;
+    if (!user || !session || !session.start) return;
 
-    const employee_id = user.uid;
-    const sessionRef = doc(db, `clocking/${employee_id}/sessions`, session.id);
+    const sessionRef = doc(db, 'clocking', session.id);
 
     const breakTime = Timestamp.now();
-    const workSeconds = breakTime.seconds - session.start.seconds;
-    const workHours = parseFloat((workSeconds / 3600).toFixed(2));
+    const workHours = calculateHours(session.start, breakTime);
 
     const updatedSession = {
       ...session,
       end: breakTime,
-      hours: workHours
+      hours: workHours,
     };
 
-    // Update the session document
     await setDoc(sessionRef, updatedSession);
-
     setSession(updatedSession);
     setCurrentState('onBreak');
   };
@@ -148,22 +148,20 @@ const TimeClock: React.FC = () => {
   const handleEndBreak = async () => {
     if (!user || currentState !== 'onBreak') return;
 
-    const employee_id = user.uid;
-    const sessionsRef = collection(db, `clocking/${employee_id}/sessions`);
-    const newSessionRef = doc(sessionsRef);
+    const employ_id = user.uid;
+    const clockingRef = collection(db, 'clocking');
+    const newSessionRef = doc(clockingRef);
 
     const newSession: ClockingSession = {
       id: newSessionRef.id,
-      employee_id,
+      employ_id,
       start: Timestamp.now(),
       end: null,
       pay_code: payCode,
-      hours: null
+      hours: null,
     };
 
-    // Create a new document for the new session
     await setDoc(newSessionRef, newSession);
-
     setSession(newSession);
     setCurrentState('clockedIn');
   };
