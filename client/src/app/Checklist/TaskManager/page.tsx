@@ -7,13 +7,12 @@ const TaskManager = () => {
     const [taskInput, setTaskInput] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
-    const uid = 'user-id'; // Replace with the actual user ID
 
     useEffect(() => {
         // Fetch tasks from the API
         const fetchTasks = async () => {
             try {
-                const response = await fetch(`/api/checklist?uid=${uid}`);
+                const response = await fetch(`/api/Checklist/CheckAPI`);
                 const data = await response.json();
                 setTasks(data);
             } catch (error) {
@@ -33,11 +32,10 @@ const TaskManager = () => {
         setLoading(true);
 
         try {
-            const response = await fetch(`/api/checklist`, {
+            const response = await fetch(`/api/Checklist/CheckAPI`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    uid,
                     task: { text: taskInput, completed: false },
                 }),
             });
@@ -53,10 +51,10 @@ const TaskManager = () => {
 
     const removeTask = async (id: string) => {
         try {
-            await fetch(`/api/checklist`, {
+            await fetch(`/api/Checklist/CheckAPI`, {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ uid, id }),
+                body: JSON.stringify({ id }),
             });
             setTasks(tasks.filter((task) => task.id !== id));
         } catch (error) {
@@ -66,7 +64,7 @@ const TaskManager = () => {
 
     return (
         <div className="p-8 max-w-lg mx-auto bg-white shadow-lg rounded-lg">
-            <h2 className="text-xl font-bold mb-4">Task Manager</h2>
+            <h2 className="text-xl text-black font-bold mb-4">Task Manager</h2>
             {error && <p className="text-red-500 mb-2">{error}</p>}
             <div className="flex gap-2 mb-4">
                 <input
@@ -74,7 +72,7 @@ const TaskManager = () => {
                     value={taskInput}
                     onChange={(e) => setTaskInput(e.target.value)}
                     placeholder="Enter a task..."
-                    className="flex-1 p-2 border rounded"
+                    className="flex-1 p-2 text-black border rounded"
                 />
                 <button onClick={addTask} disabled={loading} className="p-2 bg-blue-500 text-white rounded">
                     {loading ? 'Adding...' : 'Add'}

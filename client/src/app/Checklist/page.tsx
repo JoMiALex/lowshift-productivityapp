@@ -11,7 +11,16 @@ const Checklist = () => {
         // Fetch tasks from the API
         const fetchTasks = async () => {
             try {
-                const response = await fetch(`/api/checklist`);
+                const response = await fetch(`/api/Checklist/CheckAPI`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+        
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    throw new Error('Invalid content type, expected JSON');
+                }
+        
                 const data = await response.json();
                 setTasks(data);
             } catch (error) {
@@ -30,7 +39,7 @@ const Checklist = () => {
 
         // Update the task in the database
         try {
-            await fetch(`/api/checklist`, {
+            await fetch(`/api/Checklist/CheckAPI`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -48,12 +57,12 @@ const Checklist = () => {
             {/* Button to navigate to Task Manager */}
             <button
                 onClick={() => router.push('/Checklist/TaskManager')}
-                className="absolute top-4 right-4 p-3 bg-blue-500 text-white rounded-full shadow-lg hover:bg-blue-600"
+                className="top-4 right-4 p-3 bg-emerald-900 text-white rounded-full shadow-lg hover:bg-green-700 transition-colors"
             >
                 Task Manager
             </button>
 
-            <h2 className="text-xl font-bold mb-4">Daily Checklist</h2>
+            <h2 className="p-5 text-xl text-black font-bold mb-4">Daily Checklist</h2>
             <ul>
                 {tasks.map((task, index) => (
                     <li key={task.id} className="flex justify-between items-center p-2 border-b">
