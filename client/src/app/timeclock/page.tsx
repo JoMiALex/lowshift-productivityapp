@@ -3,23 +3,16 @@
 import React, { useEffect, useState } from 'react';
 import './tcStyle.css';
 import { db } from './../../../lib/firebase';
-import { doc, setDoc, getDoc, updateDoc, Timestamp } from "firebase/firestore";
+import { doc, collection, setDoc, getDocs, Timestamp, query, where, orderBy, limit } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
-
-type Shift = {
-  start: Timestamp;
-  end: Timestamp | null;
-  breakstart: Timestamp | null;
-  breakend: Timestamp | null;
-  pay_code: string;
-  hours: number | null;
-};
 
 type ClockingSession = {
   id: string;
-  employee_id: string;
-  date: string;
-  shift: Shift[];
+  employ_id: string;
+  start: Timestamp;
+  end: Timestamp | null;
+  pay_code: string;
+  hours: number | null;
 };
 
 const TimeClock: React.FC = () => {
@@ -56,30 +49,34 @@ const TimeClock: React.FC = () => {
   const fetchSession = async () => {
     if (!user) return;
 
-    const employee_id = user.uid;
-    const ref = doc(db, "clocking", employee_id);
+    const employ_id = user.uid;
+    const clockingRef = collection(db, 'clocking');
+    const q = query(
+      clockingRef,
+      where('employ_id', '==', employ_id),
+      orderBy('start', 'desc'),
+      limit(1)
+    );
 
-    const docSnap = await getDoc(ref);
+    const querySnapshot = await getDocs(q);
 
-    if (docSnap.exists()) {
-      const data = docSnap.data() as ClockingSession;
-      setSession(data);
+    if (!querySnapshot.empty) {
+      const doc = querySnapshot.docs[0];
+      const data = doc.data();
 
-      const lastShift = data.shift[data.shift.length - 1];
-      if (lastShift) {
-        if (lastShift.end === null) {
-          setCurrentState(lastShift.breakstart !== null && lastShift.breakend === null ? 'onBreak' : 'clockedIn');
-        } else {
-          setCurrentState('idle');
-        }
-      }
+      const sessionData: ClockingSession = {
+        id: doc.id,
+        employ_id: data.employ_id || employ_id,
+        start: data.start || Timestamp.now(),
+        end: data.end || null,
+        pay_code: data.pay_code || 'Regular',
+        hours: data.hours || null,
+      };
+
+      setSession(sessionData);
+      setCurrentState(data.end === null ? 'clockedIn' : 'idle');
     } else {
-      setSession({
-        id: employee_id,
-        employee_id,
-        date: new Date().toISOString().split("T")[0],
-        shift: []
-      });
+      setSession(null);
       setCurrentState('idle');
     }
   };
@@ -93,102 +90,80 @@ const TimeClock: React.FC = () => {
   const handleClockIn = async () => {
     if (!user) return;
 
-    const employee_id = user.uid;
-    const ref = doc(db, "clocking", employee_id);
+    const employ_id = user.uid;
+    const clockingRef = collection(db, 'clocking');
+    const newSessionRef = doc(clockingRef);
 
-    const newShift: Shift = {
+    const newSession: ClockingSession = {
+      id: newSessionRef.id,
+      employ_id,
       start: Timestamp.now(),
       end: null,
-      breakstart: null,
-      breakend: null,
       pay_code: payCode,
-      hours: null
+      hours: null,
     };
 
-    await setDoc(ref, {
-      employee_id,
-      date: new Date().toISOString().split("T")[0],
-      shift: [...(session?.shift || []), newShift]
-    }, { merge: true });
-
+    await setDoc(newSessionRef, newSession);
+    setSession(newSession);
     setCurrentState('clockedIn');
-    fetchSession();
   };
 
   const handleClockOut = async () => {
-    if (!user || !session || session.shift.length === 0) return;
+    if (!user || !session || !session.start) return;
 
-    const employee_id = user.uid;
-    const ref = doc(db, "clocking", employee_id);
-
-    const updatedShifts = [...session.shift];
-    const lastShift = updatedShifts[updatedShifts.length - 1];
-
-    if (lastShift.end !== null) return;
-
+    const sessionRef = doc(db, 'clocking', session.id);
     const endTime = Timestamp.now();
-    let totalBreakSeconds = 0;
+    const workHours = calculateHours(session.start, endTime);
 
-    if (lastShift.breakstart && lastShift.breakend) {
-      totalBreakSeconds = lastShift.breakend.seconds - lastShift.breakstart.seconds;
-    }
+    const updatedSession = {
+      ...session,
+      end: endTime,
+      hours: workHours,
+    };
 
-    const workSeconds = endTime.seconds - lastShift.start.seconds - totalBreakSeconds;
-    const workHours = parseFloat((workSeconds / 3600).toFixed(2));
-
-    lastShift.end = endTime;
-    lastShift.hours = workHours;
-
-    await updateDoc(ref, {
-      shift: updatedShifts
-    });
-
+    await setDoc(sessionRef, updatedSession);
+    setSession(updatedSession);
     setCurrentState('idle');
-    fetchSession();
   };
 
-  const handleStartBreak = async () => {
-    if (!user || !session || currentState !== 'clockedIn') return;
+  const handleBreakIn = async () => {
+    if (!user || !session || !session.start) return;
 
-    const employee_id = user.uid;
-    const ref = doc(db, "clocking", employee_id);
+    const sessionRef = doc(db, 'clocking', session.id);
 
-    const updatedShifts = [...session.shift];
-    const lastShift = updatedShifts[updatedShifts.length - 1];
+    const breakTime = Timestamp.now();
+    const workHours = calculateHours(session.start, breakTime);
 
-    lastShift.breakstart = Timestamp.now();
-    lastShift.breakend = null;
+    const updatedSession = {
+      ...session,
+      end: breakTime,
+      hours: workHours,
+    };
 
-    await updateDoc(ref, {
-      shift: updatedShifts
-    });
-
+    await setDoc(sessionRef, updatedSession);
+    setSession(updatedSession);
     setCurrentState('onBreak');
-    fetchSession();
   };
 
   const handleEndBreak = async () => {
-    if (!user || !session || currentState !== 'onBreak') return;
+    if (!user || currentState !== 'onBreak') return;
 
-    const employee_id = user.uid;
-    const ref = doc(db, "clocking", employee_id);
+    const employ_id = user.uid;
+    const clockingRef = collection(db, 'clocking');
+    const newSessionRef = doc(clockingRef);
 
-    const updatedShifts = [...session.shift];
-    const lastShift = updatedShifts[updatedShifts.length - 1];
+    const newSession: ClockingSession = {
+      id: newSessionRef.id,
+      employ_id,
+      start: Timestamp.now(),
+      end: null,
+      pay_code: payCode,
+      hours: null,
+    };
 
-    if (lastShift.breakstart === null || lastShift.breakend !== null) return;
-
-    lastShift.breakend = Timestamp.now();
-
-    try {
-      await updateDoc(ref, {
-        shift: updatedShifts
-      });
-      setCurrentState('clockedIn');
-      fetchSession();
-    } catch (error) {
-      console.error("Error ending break:", error);
-    }
+    await setDoc(newSessionRef, newSession);
+    setSession(newSession);
+    setCurrentState('clockedIn');
   };
 
   return (
@@ -235,7 +210,7 @@ const TimeClock: React.FC = () => {
           <button 
             className="clock-button" 
             id="break" 
-            onClick={handleStartBreak}
+            onClick={handleBreakIn}
             disabled={currentState !== 'clockedIn'}
           >
             <i className="fa-solid fa-coffee"></i> Start Break

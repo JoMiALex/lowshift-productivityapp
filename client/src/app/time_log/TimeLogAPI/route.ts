@@ -66,8 +66,11 @@ export async function GET(request: NextRequest) {
         try {
             const q = query(
                 clockingRef,
-                where('employ_id', '==', employ_id)
-            );
+                where('employ_id', '==', employ_id),
+                where('start', '>=', Timestamp.fromDate(start)), // Add date filtering
+                where('start', '<=', Timestamp.fromDate(end)),
+                orderBy('start', 'desc') // Match TimeClock's order
+              );
 
             console.log('Executing Firestoe query...');
             const querySnapshot = await getDocs(q);
