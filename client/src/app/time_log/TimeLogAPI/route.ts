@@ -16,11 +16,11 @@ export async function GET(request: NextRequest) {
     try {
         const searchParams = request.nextUrl.searchParams;
         const type = searchParams.get('type');
-        const employ_id = searchParams.get('employ_id');
+        const employee_id = searchParams.get('employee_id');
         const startDate = searchParams.get('startDate');
         const endDate = searchParams.get('endDate');
 
-        console.log('API Request params:', { type, employ_id, startDate, endDate });
+        console.log('API Request params:', { type, employ_id: employee_id, startDate, endDate });
 
         if(type === 'payCodes') {
             //fetching paycodes
@@ -43,10 +43,10 @@ export async function GET(request: NextRequest) {
             return NextResponse.json(Array.from(payCodes));
         }
 
-        if (!employ_id) {
-            console.error('Missing employ_id parameter');
+        if (!employee_id) {
+            console.error('Missing employee_id parameter');
             return NextResponse.json(
-                { message: 'employ_id parameter is required'},
+                { message: 'employee_id parameter is required'},
                 { status: 400 }
             );
         }
@@ -55,7 +55,7 @@ export async function GET(request: NextRequest) {
         const end = endDate ? new Date(endDate) : new Date();
 
         console.log('Query parameters:', {
-            employ_id,
+            employee_id,
             start: start.toISOString(),
             end: end.toISOString()
         });
@@ -66,7 +66,7 @@ export async function GET(request: NextRequest) {
         try {
             const q = query(
                 clockingRef,
-                where('employ_id', '==', employ_id),
+                where('employee_id', '==', employee_id),
                 where('start', '>=', Timestamp.fromDate(start)), // Add date filtering
                 where('start', '<=', Timestamp.fromDate(end)),
                 orderBy('start', 'desc') // Match TimeClock's order

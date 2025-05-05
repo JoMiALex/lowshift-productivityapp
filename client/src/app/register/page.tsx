@@ -43,7 +43,7 @@ const register = () => {
             await updateProfile(res.user, { displayName: firstName });
 
             await setDoc(doc(db, 'employees', res.user.uid), {
-                employ_id: res.user.uid,
+                employee_id: res.user.uid,
                 first_name: firstName,
                 last_name: lastName,
                 email,

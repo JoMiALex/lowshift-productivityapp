@@ -8,7 +8,7 @@ import { getAuth } from "firebase/auth";
 
 type ClockingSession = {
   id: string;
-  employ_id: string;
+  employee_id: string;
   start: Timestamp;
   end: Timestamp | null;
   pay_code: string;
@@ -49,11 +49,11 @@ const TimeClock: React.FC = () => {
   const fetchSession = async () => {
     if (!user) return;
 
-    const employ_id = user.uid;
+    const employee_id = user.uid;
     const clockingRef = collection(db, 'clocking');
     const q = query(
       clockingRef,
-      where('employ_id', '==', employ_id),
+      where('employee_id', '==', employee_id),
       orderBy('start', 'desc'),
       limit(1)
     );
@@ -66,7 +66,7 @@ const TimeClock: React.FC = () => {
 
       const sessionData: ClockingSession = {
         id: doc.id,
-        employ_id: data.employ_id || employ_id,
+        employee_id: data.employee_id || employee_id,
         start: data.start || Timestamp.now(),
         end: data.end || null,
         pay_code: data.pay_code || 'Regular',
@@ -90,13 +90,13 @@ const TimeClock: React.FC = () => {
   const handleClockIn = async () => {
     if (!user) return;
 
-    const employ_id = user.uid;
+    const employee_id = user.uid;
     const clockingRef = collection(db, 'clocking');
     const newSessionRef = doc(clockingRef);
 
     const newSession: ClockingSession = {
       id: newSessionRef.id,
-      employ_id,
+      employee_id,
       start: Timestamp.now(),
       end: null,
       pay_code: payCode,
@@ -148,13 +148,13 @@ const TimeClock: React.FC = () => {
   const handleEndBreak = async () => {
     if (!user || currentState !== 'onBreak') return;
 
-    const employ_id = user.uid;
+    const employee_id = user.uid;
     const clockingRef = collection(db, 'clocking');
     const newSessionRef = doc(clockingRef);
 
     const newSession: ClockingSession = {
       id: newSessionRef.id,
-      employ_id,
+      employee_id,
       start: Timestamp.now(),
       end: null,
       pay_code: payCode,
