@@ -125,15 +125,17 @@ export default function ScheduleView({ schedule, initialDate = new Date(), onWee
     setCalendarMonth(newMonth)
   }
 
-  // Helper function to format shift times
   function formatShiftTime(time: Date | Timestamp): string {
+    if (!time) {
+        return 'Invalid time';
+    }
     const date = time instanceof Timestamp ? time.toDate() : time;
     return date.toLocaleTimeString([], {
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: true
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
     }).replace(/^0/, '');
-  }
+}
 
   // Calendar days
   const calendarDaysComplete = getCalendarDays(calendarMonth)
