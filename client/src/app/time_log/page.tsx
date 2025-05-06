@@ -113,11 +113,11 @@ const TimeLog = () => {
             const params = new URLSearchParams({
                 startDate: start.toISOString(),
                 endDate: end.toISOString(),
-                employ_id: user.uid  
+                employee_id: user.uid  
             });
 
-            console.log('API Request URL:', `/api/time_log/TimeLogAPI?${params.toString()}`);
-            const response = await fetch(`/api/time_log/TimeLogAPI?${params.toString()}`);
+            console.log('API Request URL:', `/time_log/TimeLogAPI?${params.toString()}`);
+            const response = await fetch(`/time_log/TimeLogAPI?${params.toString()}`);
       
         if (!response.ok) {
             const errorData = await response.json();
@@ -147,7 +147,7 @@ const TimeLog = () => {
             // setPayCodes(mockPayCodes);
 
             //firebase data
-            const response = await fetch('/api/time_log/TimeLogAPI?type=pay_codes');
+            const response = await fetch('/time_log/TimeLogAPI?type=pay_codes');
             if (!response.ok) {
                 throw new Error('Failed to fetch pay codes');
             }

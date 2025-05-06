@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
         const startDate = searchParams.get('startDate');
         const endDate = searchParams.get('endDate');
 
-        console.log('API Request params:', { type, employ_id: employee_id, startDate, endDate });
+        console.log('API Request params:', { type, employee_id: employee_id, startDate, endDate });
 
         if(type === 'payCodes') {
             //fetching paycodes
