@@ -92,7 +92,11 @@ const TimeLog = () => {
     };
 
     const fetchTimeLogEntries = async (start: Date, end: Date): Promise<TimeLogEntry[]> => {
-        try {
+        if (!user?.uid) {
+            console.error('No user logged in');
+            return [];
+            }
+
         //mock data tests
         // const filteredEntries = mockTimeLogEntries.filter(entry => {
         //     const entryDate = new Date(entry.start);
@@ -103,17 +107,12 @@ const TimeLog = () => {
         // console.log('All employ_id values:', filteredEntries.map(entry => entry.employ_id));
         // return filteredEntries;
 
-        //firebase data
-            if (!user?.uid) {
-            console.error('No user logged in');
-            return [];
-            }
-
+        try {
             console.log('Fetching time logs for user:', user.uid);
             const params = new URLSearchParams({
                 startDate: start.toISOString(),
                 endDate: end.toISOString(),
-                employee_id: user.uid  
+                employee_id: user.uid,
             });
 
             console.log('API Request URL:', `/time_log/TimeLogAPI?${params.toString()}`);
@@ -142,12 +141,18 @@ const TimeLog = () => {
     };
 
     const fetchPayCodes = async () => {
-        try {
-            //mock data tests
-            // setPayCodes(mockPayCodes);
+        if (!user?.uid) {
+            console.error('No user logged in, skipping pay codes fetch');
+            return;
+        }
 
-            //firebase data
-            const response = await fetch('/time_log/TimeLogAPI?type=pay_codes');
+        try {
+            const params = new URLSearchParams({
+                type: 'pay_codes',
+                employee_id: user.uid,
+            });
+    
+            const response = await fetch(`/time_log/TimeLogAPI?${params.toString()}`);
             if (!response.ok) {
                 throw new Error('Failed to fetch pay codes');
             }

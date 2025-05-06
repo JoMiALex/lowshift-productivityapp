@@ -5,7 +5,8 @@ import "./globals.css";
 import DashboardWrapper from "./(components)/dashboardWrapper";
 import { usePathname } from "next/navigation";
 import { Provider } from 'react-redux';
-import { store } from './(state)/store';
+import { PersistGate } from 'redux-persist/integration/react';
+import { store, persistor } from './(state)/store';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,13 +34,15 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-emerald-900`}
       >
         <Provider store={store}>
-          {showDashboard ? (
-            <DashboardWrapper>
-              <div className="bg-gray-200 rounded-lg p-5">{children}</div>
-            </DashboardWrapper>
-          ) : (
-            <div className="rounded-lg p-5">{children}</div>
-          )}
+          <PersistGate loading={null} persistor={persistor}>
+            {showDashboard ? (
+              <DashboardWrapper>
+                <div className="bg-gray-200 rounded-lg p-5">{children}</div>
+              </DashboardWrapper>
+            ) : (
+              <div className="rounded-lg p-5">{children}</div>
+            )}
+          </PersistGate>
         </Provider>
       </body>
     </html>

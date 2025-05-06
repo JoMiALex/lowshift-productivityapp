@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/../lib/firebase';
-import { collection, getDocs, doc, updateDoc, query, addDoc, deleteDoc } from 'firebase/firestore';
+import { collection, getDocs, doc, updateDoc, query, addDoc, deleteDoc, orderBy } from 'firebase/firestore';
 
 const TASKS_COLLECTION = 'tasks'; // Shared collection for all users
 
 export async function GET(req: NextRequest) {
     try {
         const tasksRef = collection(db, TASKS_COLLECTION);
-        const querySnapshot = await getDocs(query(tasksRef));
+        const querySnapshot = await getDocs(query(tasksRef, orderBy('taskStart', 'asc')));
         const tasks = querySnapshot.docs.map((doc) => ({
             id: doc.id,
             ...doc.data(),
@@ -48,15 +48,18 @@ export async function POST(req: NextRequest) {
     try {
         const { task } = await req.json();
 
-        if (!task || typeof task.text !== 'string' || typeof task.completed !== 'boolean') {
+        if (
+            !task ||
+            typeof task.text !== 'string' ||
+            typeof task.completed !== 'boolean' ||
+            typeof task.taskStart !== 'string' ||
+            typeof task.taskEnd !== 'string'
+        ) {
             return NextResponse.json({ message: 'Invalid payload' }, { status: 400 });
         }
 
         const tasksRef = collection(db, TASKS_COLLECTION);
-        const docRef = await addDoc(tasksRef, {
-            ...task,
-            createdAt: new Date(),
-        });
+        const docRef = await addDoc(tasksRef, {...task});
 
         return NextResponse.json({ id: docRef.id });
     } catch (error: any) {

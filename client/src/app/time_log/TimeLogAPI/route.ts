@@ -23,6 +23,12 @@ export async function GET(request: NextRequest) {
         console.log('API Request params:', { type, employee_id: employee_id, startDate, endDate });
 
         if(type === 'payCodes') {
+            if (!employee_id) {
+                return NextResponse.json(
+                    { error: 'Missing employee_id parameter' },
+                    { status: 400 }
+                );
+            }
             //fetching paycodes
             const clockingRef = collection(db, 'clocking');
             const q = query(clockingRef);
@@ -41,14 +47,6 @@ export async function GET(request: NextRequest) {
             });
 
             return NextResponse.json(Array.from(payCodes));
-        }
-
-        if (!employee_id) {
-            console.error('Missing employee_id parameter');
-            return NextResponse.json(
-                { message: 'employee_id parameter is required'},
-                { status: 400 }
-            );
         }
  
         const start = startDate ? new Date(startDate) : new Date(0);
@@ -76,23 +74,16 @@ export async function GET(request: NextRequest) {
             const querySnapshot = await getDocs(q);
             console.log('Query completed, found documents:', querySnapshot.size);
 
-            const entries: TimeLogEntry[] = [];
-
-            querySnapshot.forEach((doc: QueryDocumentSnapshot<DocumentData>) => {
+            const entries: TimeLogEntry[] = querySnapshot.docs.map((doc) => {
                 const data = doc.data();
-                const entryStart = data.start.toDate();
-                
-                if (entryStart >= start && entryStart <= end) {
-                    entries.push({
-                        id: doc.id,
-                        employ_id:  data.employ_id,
-                        start: entryStart,
-                        end: data.end.toDate(),
-                        hours: data.hours || 0,
-                        pay_code: data.pay_code || 'Regular',
-                        comments: data.comments || ''
-                    });
-                }
+                return {
+                    id: doc.id,
+                    employee_id: data.employee_id || '',
+                    start: data.start?.toDate() || new Date(0),
+                    end: data.end?.toDate() || new Date(0),
+                    hours: data.hours || 0,
+                    pay_code: data.pay_code || 'Regular',
+                };
             });
 
         entries.sort((a, b) => a.start.getTime() - b.start.getTime());

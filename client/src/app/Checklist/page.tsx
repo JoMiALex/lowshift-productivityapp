@@ -11,7 +11,7 @@ const Checklist = () => {
         // Fetch tasks from the API
         const fetchTasks = async () => {
             try {
-                const response = await fetch(`/api/Checklist/CheckAPI`);
+                const response = await fetch(`/Checklist/CheckAPI`);
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
@@ -31,15 +31,15 @@ const Checklist = () => {
         fetchTasks();
     }, []);
 
-    const toggleTask = async (index: number) => {
-        const updatedTasks = [...tasks];
-        const task = updatedTasks[index];
-        task.completed = !task.completed;
-        setTasks(updatedTasks);
+    const toggleTask = async (id: string) => {
+        const task = tasks.find((t) => t.id === id);
+        if (!task) return; // Ensure the task exists
+        // Create a new task object with the updated completed status
+        const updatedTask = { ...task, completed: !task.completed };
 
         // Update the task in the database
         try {
-            await fetch(`/api/Checklist/CheckAPI`, {
+            await fetch(`/Checklist/CheckAPI`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -47,36 +47,44 @@ const Checklist = () => {
                     updates: { completed: task.completed },
                 }),
             });
+
+            const updatedTasks = tasks.map((t) =>
+                t.id === id ? updatedTask : t
+            );
+            setTasks(updatedTasks);
         } catch (error) {
             console.error('Error updating task:', error);
         }
     };
 
     return (
-        <div className="p-8 max-w-lg mx-auto bg-white shadow-lg rounded-lg">
-            {/* Button to navigate to Task Manager */}
-            <button
-                onClick={() => router.push('/Checklist/TaskManager')}
-                className="top-4 right-4 p-3 bg-emerald-900 text-white rounded-full shadow-lg hover:bg-green-700 transition-colors"
-            >
-                Task Manager
-            </button>
-
-            <h2 className="p-5 text-xl text-black font-bold mb-4">Daily Checklist</h2>
+        <div className="p-8 max-w-lg mx-auto flex flex-col justify-between h-full">
+            <h2 className="p-5 text-3xl text-emerald-900 font-bold mb-4 self-center border-b-4 border-emerald-900">
+            Tasks
+            </h2>
+            <div className="w-full">
             <ul>
-                {tasks.map((task, index) => (
-                    <li key={task.id} className="flex justify-between items-center p-2 border-b">
-                        <div className="flex items-center gap-2">
-                            <input
-                                type="checkbox"
-                                checked={task.completed}
-                                onChange={() => toggleTask(index)}
-                            />
-                            <span className={task.completed ? "line-through text-gray-500" : ""}>{task.text}</span>
-                        </div>
+                {tasks
+                .filter((task) => !task.completed)
+                .map((task) => (
+                    <li key={task.id} className="flex justify-between items-center p-2 border-b border-emerald-900">
+                    <div className="flex items-center gap-2">
+                        <input
+                        type="checkbox"
+                        checked={task.completed}
+                        onChange={() => toggleTask(task.id)}
+                        />
+                        <span className="text-black">{task.text}</span>
+                    </div>
                     </li>
                 ))}
             </ul>
+            </div>
+
+            {/* Button to navigate to Task Manager */}
+            <button
+            onClick={() => router.push('/Checklist/TaskManager')}
+            className="mt-4 p-3 bg-emerald-900 text-white rounded-full shadow-lg hover:bg-green-700 transition-colors self-center">Task Manager</button>
         </div>
     );
 };
